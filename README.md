@@ -1,2 +1,2 @@
 # uhst-client-js
-User Hosted Secure Transport JavaScript client library
+User Hosted Secure Transmission JavaScript client library
