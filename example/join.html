@@ -1,0 +1,42 @@
+<script>
+    const config = { iceServers: [{ urls: ["stun:stun.1.google.com:19302", "stun:stun.ideasip.com:3478"] }] };
+    const pc = new RTCPeerConnection(config);
+    const dc = pc.createDataChannel("chat");
+    dc.onopen = (event) => {
+        console.log("Data Channel:" + JSON.stringify(event))
+        dc.send("first message!");
+    };
+    pc.oniceconnectionstatechange = e => console.log(pc.iceConnectionState);
+    dc.onmessage = e => console.log(`Received Message: ${e.data}`);
+    const init = async () => {
+        try {
+            const offer = await pc.createOffer();
+            console.log('Offer: ' + JSON.stringify(offer));
+            await pc.setLocalDescription(offer);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    pc.onicecandidate = ({ candidate }) => {
+        if (candidate) {
+            console.log(candidate);
+            return;
+        }
+        fetch('http://localhost:3000/test-room', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type: "offer", sdp: pc.localDescription.sdp }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                pc.setRemoteDescription(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
+    init();
+</script>

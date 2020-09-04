@@ -1,0 +1,43 @@
+<script>
+    const config = { iceServers: [{ urls: ["stun:stun.1.google.com:19302", "stun:stun.ideasip.com:3478"] }] };
+
+    const evtSource = new EventSource("http://localhost:3000/test-room");
+    evtSource.onmessage = async function (event) {
+        console.log(event.data);
+        const offerId = event.lastEventId;
+        const pc = new RTCPeerConnection(config);
+        pc.ondatachannel = (event) => {
+            console.log(event);
+            dc = event.channel;
+            dc.onmessage = e => console.log(`Received Message: ${e.data}`);
+            dc.onopen = (receiveChannelEvent) => console.log(receiveChannelEvent);
+            dc.onclose = (receiveChannelEvent) => console.log(receiveChannelEvent);
+            dc.send("Roger that!");
+        };
+        pc.oniceconnectionstatechange = e => console.log(pc.iceConnectionState);
+        pc.onicecandidate = ({ candidate }) => {
+            if (candidate) {
+                console.log(candidate);
+                return;
+            }
+            fetch(`http://localhost:3000/test-room/${offerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type: "answer", sdp: pc.localDescription.sdp }),
+            })
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        };
+        await pc.setRemoteDescription(JSON.parse(event.data));
+        const answer = await pc.createAnswer();
+        console.log('Answer: ' + JSON.stringify(answer));
+        await pc.setLocalDescription(answer);
+        console.log(pc.localDescription);
+    }
+</script>
