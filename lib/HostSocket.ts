@@ -1,14 +1,31 @@
-import { EventEmitter } from "events";
-import { UhstApiClient } from "./UhstApiClient";
-import { UhstSocket } from "./UhstSocket";
+import { EventEmitter } from "inf-ee";
+import { UhstApiClient } from "./contracts/UhstApiClient";
+import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
 import { Message } from "./models";
 
-export class HostSocket extends EventEmitter implements UhstSocket {
+
+export class HostSocket implements UhstSocket {
+    private _ee = new EventEmitter<SocketEventSet>();
     private connection: RTCPeerConnection;
     private dataChannel: RTCDataChannel;
 
     constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, private responseToken: string, private sendUrl?: string) {
-        super();
+    }
+
+    on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.on(eventName, handler);
+    }
+
+    once<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.once(eventName, handler);
+    }
+
+    off<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.off(eventName, handler);
+    }
+
+    send(message: string): void {
+        this.dataChannel.send(message);
     }
 
     private handleConnectionStateChange(ev: Event) {
@@ -48,10 +65,10 @@ export class HostSocket extends EventEmitter implements UhstSocket {
         this.connection.ondatachannel = (event) => {
             this.dataChannel = event.channel;
             this.dataChannel.onopen = () => {
-                this.emit("open");
+                this._ee.emit("open");
             };
             this.dataChannel.onmessage = (event) => {
-                this.emit("message", event.data);
+                this._ee.emit("message", event.data);
             };
         };
         await this.connection.setRemoteDescription(description);
@@ -59,9 +76,4 @@ export class HostSocket extends EventEmitter implements UhstSocket {
         await this.connection.setLocalDescription(answer);
         this.apiClient.sendMessage(this.responseToken, answer, this.sendUrl);
     }
-
-    send(message: string): void {
-        this.dataChannel.send(message);
-    }
-
 }

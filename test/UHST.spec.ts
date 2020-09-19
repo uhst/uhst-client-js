@@ -3,7 +3,7 @@ import { expect, use } from "chai";
 import { describe } from "mocha";
 import { stub } from "sinon";
 import { UHST } from "../lib";
-import { UhstApiClient } from "../lib/UhstApiClient";
+import { UhstApiClient } from "../lib/contracts/UhstApiClient";
 import { ClientConfiguration, HostConfiguration, HostMessage } from "../lib/models";
 import { ClientSocket } from "../lib/ClientSocket";
 import { UhstHost } from "../lib/UhstHost";
@@ -16,23 +16,23 @@ describe("# UHST", () => {
         expect(new UHST()).to.not.be.null;
     });
     it("should accept RTCConfiguration", () => {
-        const configuration: RTCConfiguration = {};
-        expect(new UHST(configuration)).to.not.be.null;
+        expect(new UHST({ rtcConfiguration: {} })).to.not.be.null;
     });
     it("should accept RTCConfiguration and meetingPointUrl", () => {
         const configuration: RTCConfiguration = {};
         const meetingPointUrl = "test"
-        expect(new UHST(configuration, meetingPointUrl)).to.not.be.null;
+        expect(new UHST({ rtcConfiguration: configuration, meetingPointUrl: meetingPointUrl })).to.not.be.null;
     });
     it("can join host", (done) => {
         const mockApi = <UhstApiClient>{};
         const mockConfig: RTCConfiguration = {};
-        const uhst: UHST = new UHST(mockConfig, mockApi);
+        const uhst: UHST = new UHST({ rtcConfiguration: mockConfig, meetingPointClient: mockApi });
         const mockOffer: RTCSessionDescriptionInit = {};
         const mockAnswer: RTCSessionDescriptionInit = { type: "answer" };
         const mockLocalCandidate: RTCIceCandidateInit = {};
         const mockRemoteCandidate: RTCIceCandidateInit = {};
         const mockDataChannel: RTCDataChannel = <RTCDataChannel>{};
+        const mockStreamClose = stub();
         let messageHandler: Function;
 
         (global as any).RTCPeerConnection = (config: RTCConfiguration): RTCPeerConnection => {
@@ -88,6 +88,9 @@ describe("# UHST", () => {
             expect(clientToken).to.equal("testClientToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handleMessage;
+            return {
+                close: mockStreamClose
+            }
         }
         mockApi.sendMessage = (clientToken, message, sendUrl): Promise<void> => {
             expect(clientToken).to.equal("testClientToken");
@@ -110,6 +113,7 @@ describe("# UHST", () => {
         expect(uhstSocket).to.not.be.null;
         uhstSocket.on('open', () => {
             expect(mockApi.initClient).to.have.been.calledWith("testHost");
+            expect(mockStreamClose).to.have.been.calledOnce;
             done();
         });
     });
@@ -122,7 +126,8 @@ describe("# UHST", () => {
         const mockRemoteCandidate: RTCIceCandidateInit = {};
         const mockDataChannel: RTCDataChannel = <RTCDataChannel>{};
         const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicmVzcG9uc2VUb2tlbiIsImhvc3RJZCI6InRlc3RIb3N0IiwiY2xpZW50SWQiOiI4ODk2OGUzYi03YTQ1LTQwMTMtYjY2OC1iNWIwMDIwMTQ2M2EiLCJpYXQiOjE1OTk4ODI1NjB9.Ck583aKIeEcEsvCVlNgpMgLrVM1JQQC4vB8PCaTU-pA";
-        const uhst: UHST = new UHST(mockConfig, mockApi);
+        const mockStreamClose = stub();
+        const uhst: UHST = new UHST({ rtcConfiguration: mockConfig, meetingPointClient: mockApi });
         let messageHandler: Function;
         const connection = <RTCPeerConnection>{
             createAnswer: (): Promise<RTCSessionDescriptionInit> => {
@@ -172,6 +177,9 @@ describe("# UHST", () => {
             expect(hostToken).to.equal("testHostToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handleMessage;
+            return {
+                close: mockStreamClose
+            }
         }
         mockApi.sendMessage = (responseToken, message, sendUrl): Promise<void> => {
             expect(responseToken).to.equal(mockToken);
@@ -209,6 +217,7 @@ describe("# UHST", () => {
         });
         uhstHost.on("connection", (socket) => {
             expect(socket).to.not.be.undefined;
+            expect(mockStreamClose).to.not.have.been.called;
             done();
         });
 

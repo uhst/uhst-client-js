@@ -1,4 +1,4 @@
-import { UhstApiClient, MessageHandler } from "./UhstApiClient";
+import { UhstApiClient, MessageHandler } from "./contracts/UhstApiClient";
 import { ClientConfiguration, HostConfiguration, Message } from "./models";
 
 export class ApiClient implements UhstApiClient {
@@ -41,13 +41,14 @@ export class ApiClient implements UhstApiClient {
             body: JSON.stringify(message),
         });
     }
-    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): void {
+    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): EventSource {
         const url = receiveUrl ?? this.apiUrl;
         const stream = new EventSource(`${url}?token=${token}`);
         stream.addEventListener("message", (evt: MessageEvent) => {
             const message: Message = JSON.parse(evt.data);
             handler(message);
         });
+        return stream;
     }
 
 }

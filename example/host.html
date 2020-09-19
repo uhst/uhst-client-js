@@ -1,6 +1,6 @@
-<script src="../dist/uhst.bundle.js"></script>
+<script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST({ iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] }, "http://localhost:3000/");
+    var test = new uhst.UHST({ iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] });
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");

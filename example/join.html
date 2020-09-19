@@ -1,7 +1,7 @@
-<script src="../dist/uhst.bundle.js"></script>
+<script src="../uhst.umd.js"></script>
 <script>
     function join() {
-        var test = new uhst.UHST({ iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] }, "http://localhost:3000/");
+        var test = new uhst.UHST({ iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] });
         var ws = test.join("testHost");
         ws.on('open', function open() {
             ws.send("hello");

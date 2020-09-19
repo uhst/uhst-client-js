@@ -1,12 +1,12 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import builtins from 'rollup-plugin-node-builtins';
+import { terser } from "rollup-plugin-terser";
 
 export default {
-    output: {
-        format: 'umd',
-        name: 'uhst'
-    },
+    output: [
+        { file: "./dist/uhst.umd.js", format: "umd", name: "uhst" },
+        { file: "./dist/uhst.min.js", format: "umd", name: "uhst", plugins: [terser()] }
+    ],
     external: [
         // put some third party libraries here
     ],
@@ -19,8 +19,7 @@ export default {
         console.error(warning);
     },
     plugins: [
-        builtins(),
-        resolve({preferBuiltins: true}),
+        resolve(),
         commonjs()
     ]
 };

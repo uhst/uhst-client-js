@@ -1,18 +1,33 @@
-import {EventEmitter} from "events";
-import { UhstApiClient } from "./UhstApiClient";
-import { UhstSocket } from "./UhstSocket";
+import { EventEmitter } from "inf-ee";
+import { UhstApiClient, MessageStream } from "./contracts/UhstApiClient";
+import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
 import { ClientConfiguration, Message } from "./models";
 
-const RTC_SDP_TYPES = ["answer", "offer", "pranswer", "rollback"];
-
-export class ClientSocket extends EventEmitter implements UhstSocket {
+export class ClientSocket implements UhstSocket {
+    private _ee = new EventEmitter<SocketEventSet>();
     private config: ClientConfiguration;
     private connection: RTCPeerConnection;
     private dataChannel: RTCDataChannel;
+    private apiMessageStream: MessageStream;
 
     constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, private hostId: string) {
-        super();
         this.init();
+    }
+
+    on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.on(eventName, handler);
+    }
+
+    once<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.once(eventName, handler);
+    }
+
+    off<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
+        this._ee.off(eventName, handler);
+    }
+
+    send(message: string): void {
+        this.dataChannel.send(message);
     }
 
     private handleConnectionStateChange(ev: Event) {
@@ -38,7 +53,7 @@ export class ClientSocket extends EventEmitter implements UhstSocket {
     }
 
     private handleMessage(message: Message) {
-        if (RTC_SDP_TYPES.includes(message.body.type)) {
+        if (message.body.type === "answer") {
             this.connection.setRemoteDescription(message.body);
         } else {
             this.connection.addIceCandidate(message.body);
@@ -51,20 +66,16 @@ export class ClientSocket extends EventEmitter implements UhstSocket {
         this.connection.onconnectionstatechange = this.handleConnectionStateChange.bind(this);
         this.connection.onicecandidate = this.handleIceCandidate.bind(this);
         this.dataChannel = this.connection.createDataChannel("uhst");
-        this.dataChannel.onopen = (event) => {
-            this.emit("open");
+        this.dataChannel.onopen = () => {
+            this.apiMessageStream.close();
+            this._ee.emit("open");
         };
         this.dataChannel.onmessage = (event) => {
-            this.emit("message", event.data);
+            this._ee.emit("message", event.data);
         };
         const offer = await this.connection.createOffer();
-        this.apiClient.subscribeToMessages(this.config.clientToken, this.handleMessage.bind(this), this.config.receiveUrl);
+        this.apiMessageStream = this.apiClient.subscribeToMessages(this.config.clientToken, this.handleMessage.bind(this), this.config.receiveUrl);
         this.connection.setLocalDescription(offer);
         this.apiClient.sendMessage(this.config.clientToken, offer, this.config.sendUrl);
     }
-
-    send(message: string): void {
-        this.dataChannel.send(message);
-    }
-
 }
