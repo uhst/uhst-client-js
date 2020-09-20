@@ -55,6 +55,8 @@ export class UhstSocket {
             this.initHost(message.body);
         } else if (message.body.type === "answer") {
             this.connection.setRemoteDescription(message.body);
+            this._offerAccepted = true;
+            this.processIceCandidates();
         } else {
             this._pendingCandidates.push(message.body);
             this.processIceCandidates();
@@ -125,8 +127,6 @@ export class UhstSocket {
         const offer = await this.connection.createOffer();
         this.apiClient.sendMessage(this.token, offer, this.sendUrl);
         await this.connection.setLocalDescription(offer);
-        this._offerAccepted = true;
-        this.processIceCandidates();
     }
 
     private processIceCandidates = () => {
