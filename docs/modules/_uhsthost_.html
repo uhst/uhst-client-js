@@ -90,28 +90,49 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external tsd-is-not-exported">
 					<a name="hosteventset" class="tsd-anchor"></a>
 					<h3>Host<wbr>Event<wbr>Set</h3>
-					<div class="tsd-signature tsd-kind-icon">Host<wbr>Event<wbr>Set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>ready<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Host<wbr>Event<wbr>Set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../classes/_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">; </span>ready<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/9d54779/lib/UhstHost.ts#L8">UhstHost.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/8b4a74f/lib/UhstHost.ts#L7">UhstHost.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<h5>connection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../classes/_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter-signature">
 										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable tsd-is-not-exported">
-											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><a href="../classes/_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 										</ul>
 										<ul class="tsd-descriptions">
 											<li class="tsd-description">
 												<h4 class="tsd-parameters-title">Parameters</h4>
 												<ul class="tsd-parameters">
 													<li>
-														<h5>socket: <a href="../interfaces/_contracts_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a></h5>
+														<h5>socket: <a href="../classes/_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable tsd-is-not-exported">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>error: <span class="tsd-signature-type">any</span></h5>
 													</li>
 												</ul>
 												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -159,22 +180,16 @@
 						<a href="_apiclient_.html">&quot;<wbr>Api<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
-						<a href="_clientsocket_.html">&quot;<wbr>Client<wbr>Socket&quot;</a>
-					</li>
-					<li class=" tsd-kind-module tsd-is-external">
-						<a href="_hostsocket_.html">&quot;<wbr>Host<wbr>Socket&quot;</a>
-					</li>
-					<li class=" tsd-kind-module tsd-is-external">
 						<a href="_uhst_.html">&quot;UHST&quot;</a>
 					</li>
 					<li class="current tsd-kind-module tsd-is-external">
 						<a href="_uhsthost_.html">&quot;<wbr>Uhst<wbr>Host&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
-						<a href="_contracts_uhstapiclient_.html">&quot;contracts/<wbr>Uhst<wbr>Api<wbr>Client&quot;</a>
+						<a href="_uhstsocket_.html">&quot;<wbr>Uhst<wbr>Socket&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
-						<a href="_contracts_uhstsocket_.html">&quot;contracts/<wbr>Uhst<wbr>Socket&quot;</a>
+						<a href="_contracts_uhstapiclient_.html">&quot;contracts/<wbr>Uhst<wbr>Api<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="_models_clientconfiguration_.html">&quot;models/<wbr>Client<wbr>Configuration&quot;</a>
@@ -187,6 +202,9 @@
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="_models_message_.html">&quot;models/<wbr>Message&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="_models_socketparams_.html">&quot;models/<wbr>Socket<wbr>Params&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="_models_index_.html">&quot;models/index&quot;</a>

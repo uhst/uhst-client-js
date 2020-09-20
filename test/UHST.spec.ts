@@ -5,7 +5,7 @@ import { stub } from "sinon";
 import { UHST } from "../lib";
 import { UhstApiClient } from "../lib/contracts/UhstApiClient";
 import { ClientConfiguration, HostConfiguration, HostMessage } from "../lib/models";
-import { ClientSocket } from "../lib/ClientSocket";
+import { UhstSocket } from "../lib/UhstSocket";
 import { UhstHost } from "../lib/UhstHost";
 
 use(sinonChai);
@@ -109,7 +109,7 @@ describe("# UHST", () => {
             return new Promise((resolve) => { resolve(); });
         }
 
-        const uhstSocket: ClientSocket = uhst.join("testHost");
+        const uhstSocket: UhstSocket = uhst.join("testHost");
         expect(uhstSocket).to.not.be.null;
         uhstSocket.on('open', () => {
             expect(mockApi.initClient).to.have.been.calledWith("testHost");
