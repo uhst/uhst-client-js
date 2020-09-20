@@ -61,14 +61,14 @@ export class UhstSocket {
         }
     }
 
-    private createConnection(): RTCPeerConnection {
+    private createConnection = (): RTCPeerConnection => {
         const connection = new RTCPeerConnection(this.configuration);
         connection.onconnectionstatechange = this.handleConnectionStateChange;
         connection.onicecandidate = this.handleIceCandidate;
         return connection;
     }
 
-    private configureDataChannel() {
+    private configureDataChannel = () => {
         this.dataChannel.onopen = () => {
             if (this.apiMessageStream) {
                 this.apiMessageStream.close();
@@ -102,7 +102,7 @@ export class UhstSocket {
         }
     }
 
-    private async initHost(description: RTCSessionDescriptionInit) {
+    private initHost = async (description: RTCSessionDescriptionInit) => {
         this.connection.ondatachannel = (event) => {
             this.dataChannel = event.channel;
             this.configureDataChannel();
@@ -115,7 +115,7 @@ export class UhstSocket {
         this.processIceCandidates();
     }
 
-    private async initClient(hostId: string) {
+    private initClient = async (hostId: string) => {
         this.dataChannel = this.connection.createDataChannel("uhst");
         this.configureDataChannel();
         const config = await this.apiClient.initClient(hostId);
@@ -129,7 +129,7 @@ export class UhstSocket {
         this.processIceCandidates();
     }
 
-    private processIceCandidates() {
+    private processIceCandidates = () => {
         if (this._offerAccepted) {
             while (this._pendingCandidates.length > 0) {
                 const candidate = this._pendingCandidates.pop();
