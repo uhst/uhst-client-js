@@ -12,7 +12,7 @@ export class ApiClient implements UhstApiClient {
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            }).then(response => response.json())
+            }).then(response => response.status == 200 ? response.json() : null)
                 .then(data => {
                     resolve(data);
                 }).catch(reject);
@@ -25,7 +25,7 @@ export class ApiClient implements UhstApiClient {
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            }).then(response => response.json())
+            }).then(response => response.status == 200 ? response.json() : null)
                 .then(data => {
                     resolve(data);
                 }).catch(reject);

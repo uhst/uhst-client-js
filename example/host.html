@@ -1,10 +1,11 @@
 <script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST({ iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] });
+    var test = new uhst.UHST();
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");
     });
+    host.on("error", console.error);
     host.on("connection", function connection(ws) {
         ws.on('message', function incoming(message) {
             console.log('Host received: %s', message);

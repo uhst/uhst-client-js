@@ -1,19 +1,19 @@
 import JwtDecode from "jwt-decode";
 import { EventEmitter } from "inf-ee";
 import { UhstApiClient } from "./contracts/UhstApiClient";
-import { HostSocket } from "./HostSocket";
+import { UhstSocket } from "./UhstSocket";
 import { HostConfiguration, HostMessage } from "./models";
-import { UhstSocket } from "./contracts/UhstSocket";
 
 type HostEventSet = {
     ready: () => void,
-    connection: (socket: UhstSocket) => void
+    connection: (socket: UhstSocket) => void,
+    error: (error: any) => void
 }
 
 export class UhstHost {
     private _ee = new EventEmitter<HostEventSet>();
     private config: HostConfiguration;
-    private clients = new Map<string, HostSocket>();
+    private clients = new Map<string, UhstSocket>();
 
     constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, requestedHostId: string) {
         this.init(requestedHostId);
@@ -35,11 +35,11 @@ export class UhstHost {
         this._ee.off(eventName, handler);
     }
 
-    private handleMessage(message: HostMessage) {
+    private handleMessage = (message: HostMessage) => {
         const clientId: string = (JwtDecode(message.responseToken) as any).clientId;
         let hostSocket = this.clients.get(clientId);
         if (!hostSocket) {
-            const socket = new HostSocket(this.apiClient, this.configuration, message.responseToken, this.config.sendUrl);
+            const socket = new UhstSocket(this.apiClient, this.configuration, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl});
             socket.on("open", () => {
                 this._ee.emit("connection", socket);
             });
@@ -51,7 +51,11 @@ export class UhstHost {
 
     private async init(requestedHostId: string) {
         this.config = await this.apiClient.initHost(requestedHostId);
-        this.apiClient.subscribeToMessages(this.config.hostToken, this.handleMessage.bind(this), this.config.receiveUrl);
-        this._ee.emit("ready");
+        try {
+            this.apiClient.subscribeToMessages(this.config.hostToken, this.handleMessage, this.config.receiveUrl);
+            this._ee.emit("ready");
+        } catch (error) {
+            this._ee.emit("error", error);
+        }
     }
 }

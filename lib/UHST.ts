@@ -1,6 +1,6 @@
 import { UhstApiClient } from "./contracts/UhstApiClient";
 import { ApiClient } from "./ApiClient";
-import { ClientSocket } from "./ClientSocket";
+import { UhstSocket } from "./UhstSocket";
 import { UhstHost } from "./UhstHost";
 
 export interface UhstOptions {
@@ -37,7 +37,7 @@ export class UHST {
     private apiClient: UhstApiClient;
 
     constructor(options: UhstOptions = {}) {
-        this.rtcConfiguration = options.rtcConfiguration ?? {};
+        this.rtcConfiguration = options.rtcConfiguration ?? { iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] };
         if (options.meetingPointClient) {
             this.apiClient = options.meetingPointClient;
         } else if (options.meetingPointUrl) {
@@ -47,8 +47,8 @@ export class UHST {
         }
     }
 
-    join(hostId: string): ClientSocket {
-        return new ClientSocket(this.apiClient, this.rtcConfiguration, hostId);
+    join(hostId: string): UhstSocket {
+        return new UhstSocket(this.apiClient, this.rtcConfiguration, {type: "client", hostId});
     }
 
     host(hostId: string): UhstHost {
