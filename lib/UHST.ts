@@ -37,7 +37,7 @@ export class UHST {
     private apiClient: UhstApiClient;
 
     constructor(options: UhstOptions = {}) {
-        this.rtcConfiguration = options.rtcConfiguration ?? { iceServers: [{ urls: "stun:stun.ideasip.com:3478" }] };
+        this.rtcConfiguration = options.rtcConfiguration ?? { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, {urls: "stun:global.stun.twilio.com:3478"}] };
         if (options.meetingPointClient) {
             this.apiClient = options.meetingPointClient;
         } else if (options.meetingPointUrl) {

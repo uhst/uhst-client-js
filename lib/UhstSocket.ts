@@ -4,7 +4,8 @@ import { Message, HostSocketParams, ClientSocketParams } from "./models";
 
 type SocketEventSet = {
     open: () => void,
-    message: (data: any) => void
+    message: (data: any) => void,
+    diagnostic: (message: string) => void
 }
 
 export class UhstSocket {
