@@ -15,7 +15,7 @@ export class UhstHost {
     private config: HostConfiguration;
     private clients = new Map<string, UhstSocket>();
 
-    constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, requestedHostId: string) {
+    constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, requestedHostId: string, private debug: boolean) {
         this.init(requestedHostId);
     }
 
@@ -39,10 +39,8 @@ export class UhstHost {
         const clientId: string = (JwtDecode(message.responseToken) as any).clientId;
         let hostSocket = this.clients.get(clientId);
         if (!hostSocket) {
-            const socket = new UhstSocket(this.apiClient, this.configuration, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl});
-            socket.on("open", () => {
-                this._ee.emit("connection", socket);
-            });
+            const socket = new UhstSocket(this.apiClient, this.configuration, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl}, this.debug);
+            this._ee.emit("connection", socket);
             this.clients.set(clientId, socket);
             hostSocket = socket;
         }

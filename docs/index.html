@@ -106,8 +106,11 @@ host.on(<span class="hljs-string">&quot;connection&quot;</span>, <span class="hl
     uhstSocket.on(<span class="hljs-string">&quot;message&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">incoming</span>(<span class="hljs-params">message</span>) </span>{
         <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Host received: %s&quot;</span>, message);
     });
-
-    uhstSocket.send(<span class="hljs-string">&quot;something&quot;</span>);
+    uhstSocket.on(<span class="hljs-string">&quot;open&quot;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ready</span>(<span class="hljs-params"></span>) </span>{
+        <span class="hljs-comment">// note the socket is ready for sending only</span>
+        <span class="hljs-comment">// after the &quot;open&quot; event fires!</span>
+        uhstSocket.send(<span class="hljs-string">&quot;something&quot;</span>);
+    });
 });</code></pre>
 				<p>Note that your requested host id may not be accepted by the signalling server, you should always
 				use the <code>hostId</code> you get after receiving a <code>ready</code> event when connecting to the host.</p>

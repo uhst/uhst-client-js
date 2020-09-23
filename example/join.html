@@ -1,13 +1,14 @@
 <script src="../uhst.umd.js"></script>
 <script>
     function join() {
-        var test = new uhst.UHST();
+        var test = new uhst.UHST({debug: true});
         var ws = test.join("testHost");
-        ws.on('open', function open() {
+        ws.on("diagnostic", console.log);
+        ws.on("open", function open() {
             ws.send("hello");
         });
-        ws.on('message', function incoming(message) {
-            console.log('Client received: %s', message);
+        ws.on("message", function incoming(message) {
+            console.log("Client received: %s", message);
         });
     }
 

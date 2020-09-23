@@ -49,8 +49,11 @@ host.on("connection", function connection(uhstSocket) {
     uhstSocket.on("message", function incoming(message) {
         console.log("Host received: %s", message);
     });
-
-    uhstSocket.send("something");
+    uhstSocket.on("open", function ready() {
+        // note the socket is ready for sending only
+        // after the "open" event fires!
+        uhstSocket.send("something");
+    });
 });
 ```
 

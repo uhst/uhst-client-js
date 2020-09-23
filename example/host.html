@@ -1,16 +1,18 @@
 <script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST();
+    var test = new uhst.UHST({debug: true});
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");
     });
     host.on("error", console.error);
     host.on("connection", function connection(ws) {
-        ws.on('message', function incoming(message) {
-            console.log('Host received: %s', message);
+        ws.on("diagnostic", console.log);
+        ws.on("message", function incoming(message) {
+            console.log("Host received: %s", message);
         });
-
-        ws.send('something');
+        ws.on("open", function ready() {
+            ws.send("something");
+        });
     });
 </script>

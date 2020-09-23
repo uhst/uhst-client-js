@@ -23,7 +23,12 @@ export interface UhstOptions {
      * If not defined and [[meetingPointClient]] is also not defined, then
      * this library will fallback to [[DEFAULT_MEETING_POINT_URL | a default signalling server URL]].
      */
-    meetingPointUrl?: string
+    meetingPointUrl?: string,
+    /**
+     * Set to true and subscribe to "diagnostic" to receive events
+     * from [[UhstSocket]].
+     */
+    debug?: boolean
 }
 
 export class UHST {
@@ -35,8 +40,10 @@ export class UHST {
     private static DEFAULT_MEETING_POINT_URL = "https://demo.uhst.io/";
     private rtcConfiguration: RTCConfiguration;
     private apiClient: UhstApiClient;
+    private debug: boolean;
 
     constructor(options: UhstOptions = {}) {
+        this.debug = options.debug ?? false;
         this.rtcConfiguration = options.rtcConfiguration ?? { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, {urls: "stun:global.stun.twilio.com:3478"}] };
         if (options.meetingPointClient) {
             this.apiClient = options.meetingPointClient;
@@ -48,11 +55,11 @@ export class UHST {
     }
 
     join(hostId: string): UhstSocket {
-        return new UhstSocket(this.apiClient, this.rtcConfiguration, {type: "client", hostId});
+        return new UhstSocket(this.apiClient, this.rtcConfiguration, {type: "client", hostId}, this.debug);
     }
 
     host(hostId: string): UhstHost {
-        return new UhstHost(this.apiClient, this.rtcConfiguration, hostId);
+        return new UhstHost(this.apiClient, this.rtcConfiguration, hostId, this.debug);
     }
 
 }
