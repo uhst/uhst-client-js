@@ -1,8 +1,15 @@
 <script src="../uhst.umd.js"></script>
 <script>
     function join() {
-        var test = new uhst.UHST({debug: true});
+        var test = new uhst.UHST({ debug: true });
         var ws = test.join("testHost");
+        ws.on("error", function (error) {
+            if (error instanceof uhst.InvalidHostId || error instanceof uhst.InvalidClientOrHostId) {
+                alert("Invalid hostId");
+            } else {
+                console.error(error);
+            }
+        });
         ws.on("diagnostic", console.log);
         ws.on("open", function open() {
             ws.send("hello");

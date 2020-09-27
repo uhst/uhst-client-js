@@ -1,11 +1,24 @@
 <script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST({debug: true});
+    var test = new uhst.UHST({ debug: true });
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");
     });
-    host.on("error", console.error);
+    host.on("error", function (error) {
+        if (error instanceof uhst.HostIdAlreadyInUse) {
+            // this is expected if you refresh the page
+            // connection is still alive on the meeting point
+            // just need to wait
+            console.log("HostId already in use, retrying in 15 seconds...")
+            setTimeout(function () {
+                location.reload();
+            }, 15000);
+        } else {
+            console.error(error);
+        }
+    });
+    host.on("diagnostic", console.log);
     host.on("connection", function connection(ws) {
         ws.on("diagnostic", console.log);
         ws.on("message", function incoming(message) {
