@@ -35,6 +35,8 @@ export class UhstSocket {
             default:
                 throw Error("Unsupported Socket Parameters Type");
         }
+
+        this.send = this.send.bind(this);
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
@@ -49,7 +51,12 @@ export class UhstSocket {
         this._ee.off(eventName, handler);
     }
 
-    send = (message: string) => {
+    send(message: string): void;
+    send(message: Blob): void;
+    send(message: ArrayBuffer): void;
+    send(message: ArrayBufferView): void;
+
+    send(message: any) {
         if (this.debug) { this._ee.emit("diagnostic", "Sent message on data channel: " + message); }
         this.dataChannel.send(message);
     }
