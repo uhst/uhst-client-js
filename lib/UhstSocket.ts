@@ -54,6 +54,10 @@ export class UhstSocket {
         this.dataChannel.send(message);
     }
 
+    disconnect = () => {
+        this.connection.close();
+    }
+
     handleMessage = (message: Message) => {
         if (message.body.type === "offer") {
             if (this.debug) { this._ee.emit("diagnostic", "Received offer: " + JSON.stringify(message.body)); }
@@ -86,6 +90,10 @@ export class UhstSocket {
             }
             this._ee.emit("open");
         };
+        this.dataChannel.onclose = () => {
+            if (this.debug) { this._ee.emit("diagnostic", "Data channel closed."); }
+            this._ee.emit("close");
+        }
         this.dataChannel.onmessage = (event) => {
             if (this.debug) { this._ee.emit("diagnostic", "Message received on data channel: " + event.data); }
             this._ee.emit("message", event.data);
@@ -112,40 +120,37 @@ export class UhstSocket {
         }
     }
 
-    private handleIceCandidate = async (ev: RTCPeerConnectionIceEvent) => {
+    private handleIceCandidate = (ev: RTCPeerConnectionIceEvent) => {
         if (ev.candidate) {
             if (this.debug) { this._ee.emit("diagnostic", "Sending ICE candidate: " + JSON.stringify(ev.candidate)); }
-            try {
-                await this.apiClient.sendMessage(this.token, ev.candidate, this.sendUrl);
-            } catch (error) {
+            this.apiClient.sendMessage(this.token, ev.candidate, this.sendUrl).catch((error) => {
                 if (this.debug) { this._ee.emit("diagnostic", "Failed sending ICE candidate: " + JSON.stringify(error)); }
                 this._ee.emit("error", error);
-            }
+            });
         } else {
             if (this.debug) { this._ee.emit("diagnostic", "ICE gathering completed."); }
         }
     }
 
     private initHost = async (description: RTCSessionDescriptionInit) => {
-        try {
-            this.connection.ondatachannel = (event) => {
-                if (this.debug) { this._ee.emit("diagnostic", "Received new data channel: " + JSON.stringify(event.channel)); }
-                this.dataChannel = event.channel;
-                this.configureDataChannel();
-            };
-            await this.connection.setRemoteDescription(description);
-            if (this.debug) { this._ee.emit("diagnostic", "Set remote description on host: " + JSON.stringify(description)); }
-            const answer = await this.connection.createAnswer();
-            await this.apiClient.sendMessage(this.token, answer, this.sendUrl);
+        this.connection.ondatachannel = (event) => {
+            if (this.debug) { this._ee.emit("diagnostic", "Received new data channel: " + JSON.stringify(event.channel)); }
+            this.dataChannel = event.channel;
+            this.configureDataChannel();
+        };
+        await this.connection.setRemoteDescription(description);
+        if (this.debug) { this._ee.emit("diagnostic", "Set remote description on host: " + JSON.stringify(description)); }
+        const answer = await this.connection.createAnswer();
+        this.apiClient.sendMessage(this.token, answer, this.sendUrl).then(() => {
             if (this.debug) { this._ee.emit("diagnostic", "Host sent offer answer: " + JSON.stringify(answer)); }
-            await this.connection.setLocalDescription(answer);
-            if (this.debug) { this._ee.emit("diagnostic", "Local description set to offer answer on host."); }
-            this._offerAccepted = true;
-            this.processIceCandidates();
-        } catch (error) {
+        }).catch((error) => {
             if (this.debug) { this._ee.emit("diagnostic", "Host failed responding to offer:" + JSON.stringify(error)); }
             this._ee.emit("error", error);
-        }
+        });
+        await this.connection.setLocalDescription(answer);
+        if (this.debug) { this._ee.emit("diagnostic", "Local description set to offer answer on host."); }
+        this._offerAccepted = true;
+        this.processIceCandidates();
     }
 
     private initClient = async (hostId: string) => {
@@ -160,8 +165,12 @@ export class UhstSocket {
             this.apiMessageStream = this.apiClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
             if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from signalling server."); }
             const offer = await this.connection.createOffer();
-            await this.apiClient.sendMessage(this.token, offer, this.sendUrl);
-            if (this.debug) { this._ee.emit("diagnostic", "Client offer sent to host: " + JSON.stringify(offer)); }
+            this.apiClient.sendMessage(this.token, offer, this.sendUrl).then(() => {
+                if (this.debug) { this._ee.emit("diagnostic", "Client offer sent to host: " + JSON.stringify(offer)); }
+            }).catch((error) => {
+                if (this.debug) { this._ee.emit("diagnostic", "Client failed: " + JSON.stringify(error)); }
+                this._ee.emit("error", error);
+            });
             await this.connection.setLocalDescription(offer);
             if (this.debug) { this._ee.emit("diagnostic", "Local description set on client."); }
         } catch (error) {
