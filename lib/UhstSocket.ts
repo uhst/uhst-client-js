@@ -35,6 +35,8 @@ export class UhstSocket {
             default:
                 throw Error("Unsupported Socket Parameters Type");
         }
+
+        this.send = this.send.bind(this);
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
