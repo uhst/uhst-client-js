@@ -1,4 +1,5 @@
 import { EventEmitter } from "inf-ee";
+import * as sdpTransform from 'sdp-transform';
 import { UhstApiClient, MessageStream } from "./contracts/UhstApiClient";
 import { Message, HostSocketParams, ClientSocketParams } from "./models";
 
@@ -21,7 +22,19 @@ export class UhstSocket {
     private sendUrl?: string;
 
     constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, params: HostSocketParams | ClientSocketParams, private debug: boolean) {
+        this.send = this.send.bind(this);
+        this.processIceCandidates = this.processIceCandidates.bind(this);
+        this.initClient = this.initClient.bind(this);
+        this.initHost = this.initHost.bind(this);
+        this.handleIceCandidate = this.handleIceCandidate.bind(this);
+        this.handleConnectionStateChange = this.handleConnectionStateChange.bind(this);
+        this.configureDataChannel = this.configureDataChannel.bind(this);
+        this.createConnection = this.createConnection.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
+        this.disconnect = this.disconnect.bind(this);
+
         this.connection = this.createConnection();
+
         switch (params.type) {
             case "client":
                 // will connect to host
@@ -35,8 +48,6 @@ export class UhstSocket {
             default:
                 throw Error("Unsupported Socket Parameters Type");
         }
-
-        this.send = this.send.bind(this);
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {
@@ -61,11 +72,11 @@ export class UhstSocket {
         this.dataChannel.send(message);
     }
 
-    disconnect = () => {
+    disconnect() {
         this.connection.close();
     }
 
-    handleMessage = (message: Message) => {
+    handleMessage(message: Message) {
         if (message.body.type === "offer") {
             if (this.debug) { this._ee.emit("diagnostic", "Received offer: " + JSON.stringify(message.body)); }
             this.initHost(message.body);
@@ -81,14 +92,14 @@ export class UhstSocket {
         }
     }
 
-    private createConnection = (): RTCPeerConnection => {
+    private createConnection(): RTCPeerConnection {
         const connection = new RTCPeerConnection(this.configuration);
         connection.onconnectionstatechange = this.handleConnectionStateChange;
         connection.onicecandidate = this.handleIceCandidate;
         return connection;
     }
 
-    private configureDataChannel = () => {
+    private configureDataChannel() {
         this.dataChannel.onopen = () => {
             if (this.debug) { this._ee.emit("diagnostic", "Data channel opened."); }
             if (this.apiMessageStream) {
@@ -107,7 +118,7 @@ export class UhstSocket {
         };
     }
 
-    private handleConnectionStateChange = (ev: Event) => {
+    private handleConnectionStateChange(ev: Event) {
         switch (this.connection.connectionState) {
             case "connected":
                 // The connection has become fully connected
@@ -127,7 +138,7 @@ export class UhstSocket {
         }
     }
 
-    private handleIceCandidate = (ev: RTCPeerConnectionIceEvent) => {
+    private handleIceCandidate(ev: RTCPeerConnectionIceEvent) {
         if (ev.candidate) {
             if (this.debug) { this._ee.emit("diagnostic", "Sending ICE candidate: " + JSON.stringify(ev.candidate)); }
             this.apiClient.sendMessage(this.token, ev.candidate, this.sendUrl).catch((error) => {
@@ -139,7 +150,7 @@ export class UhstSocket {
         }
     }
 
-    private initHost = async (description: RTCSessionDescriptionInit) => {
+    private async initHost(description: RTCSessionDescriptionInit) {
         this.connection.ondatachannel = (event) => {
             if (this.debug) { this._ee.emit("diagnostic", "Received new data channel: " + JSON.stringify(event.channel)); }
             this.dataChannel = event.channel;
@@ -160,7 +171,7 @@ export class UhstSocket {
         this.processIceCandidates();
     }
 
-    private initClient = async (hostId: string) => {
+    private async initClient(hostId: string) {
         try {
             this.dataChannel = this.connection.createDataChannel("uhst");
             if (this.debug) { this._ee.emit("diagnostic", "Data channel created on client."); }
@@ -186,7 +197,7 @@ export class UhstSocket {
         }
     }
 
-    private processIceCandidates = () => {
+    private processIceCandidates() {
         if (this._offerAccepted) {
             if (this.debug) { this._ee.emit("diagnostic", "Offer accepted, processing cached ICE candidates."); }
             while (this._pendingCandidates.length > 0) {
