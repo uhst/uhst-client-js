@@ -1,5 +1,4 @@
 import { EventEmitter } from "inf-ee";
-import * as sdpTransform from 'sdp-transform';
 import { UhstApiClient, MessageStream } from "./contracts/UhstApiClient";
 import { Message, HostSocketParams, ClientSocketParams } from "./models";
 
