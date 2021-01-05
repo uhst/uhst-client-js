@@ -34,7 +34,7 @@ Assuming you have loaded the library, first create a new instance:
 var test = new uhst.UHST();
 ```
 
-Refer to the documentation to learn about the options you can pass (including your own meeting point / signalling server URL, WebRTC configuration, etc.) .
+Refer to the documentation to learn about the options you can pass (including your own API / signalling server URL, WebRTC configuration, etc.) .
 
 #### Host
 Host in UHST is a peer which every other peer connects to. This concept is similar to listen-server in multiplayer games.

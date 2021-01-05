@@ -10,5 +10,5 @@ export interface UhstApiClient {
     initHost(hostId: string): Promise<HostConfiguration>;
     initClient(hostId: string): Promise<ClientConfiguration>;
     sendMessage(token: string, message: any, sendUrl?:string): Promise<any>;
-    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): MessageStream;
+    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): Promise<MessageStream>;
 }

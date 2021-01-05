@@ -84,10 +84,10 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#apiclient" class="tsd-kind-icon">api<wbr>Client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#apiurl" class="tsd-kind-icon">api<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#debug" class="tsd-kind-icon">debug</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#meetingpointclient" class="tsd-kind-icon">meeting<wbr>Point<wbr>Client</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#meetingpointurl" class="tsd-kind-icon">meeting<wbr>Point<wbr>Url</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#rtcconfiguration" class="tsd-kind-icon">rtc<wbr>Configuration</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_uhst_.uhstoptions.html#socketprovider" class="tsd-kind-icon">socket<wbr>Provider</a></li>
 							</ul>
 						</section>
 					</div>
@@ -96,73 +96,66 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="apiclient" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> api<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">api<wbr>Client<span class="tsd-signature-symbol">:</span> <a href="_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UHST.ts#L18">lib/UHST.ts:18</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An API client for communication with the server,
+								normally used for testing or if implementing
+								<a href="_contracts_uhstapiclient_.uhstapiclient.html">custom  protocol</a>.
+								If both <a href="_uhst_.uhstoptions.html#apiclient">apiClient</a> and <a href="_uhst_.uhstoptions.html#apiurl">apiUrl</a> are
+							defined, then <a href="_uhst_.uhstoptions.html#apiclient">apiClient</a> will be used.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="apiurl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> api<wbr>Url</h3>
+					<div class="tsd-signature tsd-kind-icon">api<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UHST.ts#L24">lib/UHST.ts:24</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Url to a server implementing the UHST  protocol.
+								If not defined and <a href="_uhst_.uhstoptions.html#apiclient">apiClient</a> is also not defined, then
+							this library will fallback to <a href="../classes/_uhst_.uhst.html#uhst_api_url">a default server URL</a>.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="debug" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> debug</h3>
 					<div class="tsd-signature tsd-kind-icon">debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UHST.ts#L31">lib/UHST.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UHST.ts#L29">lib/UHST.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Set to true and subscribe to &quot;diagnostic&quot; to receive events
-							from <a href="../classes/_uhstsocket_.uhstsocket.html">UhstSocket</a>.</p>
+							from <a href="_contracts_uhstsocket_.uhstsocket.html">UhstSocket</a>.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="meetingpointclient" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> meeting<wbr>Point<wbr>Client</h3>
-					<div class="tsd-signature tsd-kind-icon">meeting<wbr>Point<wbr>Client<span class="tsd-signature-symbol">:</span> <a href="_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a></div>
+					<a name="socketprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> socket<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">socket<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="_contracts_uhstsocketprovider_.uhstsocketprovider.html" class="tsd-signature-type">UhstSocketProvider</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UHST.ts#L20">lib/UHST.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UHST.ts#L10">lib/UHST.ts:10</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>An API client for communication with the signalling server,
-								normally used for testing or if implementing
-								<a href="_contracts_uhstapiclient_.uhstapiclient.html">custom signalling protocol</a>.
-								If both <a href="_uhst_.uhstoptions.html#meetingpointclient">meetingPointClient</a> and <a href="_uhst_.uhstoptions.html#meetingpointurl">meetingPointUrl</a> are
-							defined, then <a href="_uhst_.uhstoptions.html#meetingpointclient">meetingPointClient</a> will be used.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="meetingpointurl" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> meeting<wbr>Point<wbr>Url</h3>
-					<div class="tsd-signature tsd-kind-icon">meeting<wbr>Point<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UHST.ts#L26">lib/UHST.ts:26</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Url to a server implementing the UHST signalling protocol.
-								If not defined and <a href="_uhst_.uhstoptions.html#meetingpointclient">meetingPointClient</a> is also not defined, then
-							this library will fallback to <a href="../classes/_uhst_.uhst.html#default_meeting_point_url">a default signalling server URL</a>.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="rtcconfiguration" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> rtc<wbr>Configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">rtc<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RTCConfiguration</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UHST.ts#L12">lib/UHST.ts:12</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Used when instantiating the underlying WebRTC connection.
-								Most importantly allows specifying iceServers for NAT
-							traversal.</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -184,6 +177,12 @@
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_apiclient_.html">&quot;<wbr>Api<wbr>Client&quot;</a>
 					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_relaysocket_.html">&quot;<wbr>Relay<wbr>Socket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_relaysocketprovider_.html">&quot;<wbr>Relay<wbr>Socket<wbr>Provider&quot;</a>
+					</li>
 					<li class="current tsd-kind-module tsd-is-external">
 						<a href="../modules/_uhst_.html">&quot;UHST&quot;</a>
 					</li>
@@ -194,10 +193,19 @@
 						<a href="../modules/_uhsthost_.html">&quot;<wbr>Uhst<wbr>Host&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
-						<a href="../modules/_uhstsocket_.html">&quot;<wbr>Uhst<wbr>Socket&quot;</a>
+						<a href="../modules/_webrtcsocket_.html">&quot;<wbr>WebRTCSocket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_webrtcsocketprovider_.html">&quot;<wbr>WebRTCSocket<wbr>Provider&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_contracts_uhstapiclient_.html">&quot;contracts/<wbr>Uhst<wbr>Api<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_contracts_uhstsocket_.html">&quot;contracts/<wbr>Uhst<wbr>Socket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_contracts_uhstsocketprovider_.html">&quot;contracts/<wbr>Uhst<wbr>Socket<wbr>Provider&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_clientconfiguration_.html">&quot;models/<wbr>Client<wbr>Configuration&quot;</a>
@@ -210,6 +218,9 @@
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_message_.html">&quot;models/<wbr>Message&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_models_relaymessage_.html">&quot;models/<wbr>Relay<wbr>Message&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_socketparams_.html">&quot;models/<wbr>Socket<wbr>Params&quot;</a>
@@ -230,16 +241,16 @@
 						<a href="_uhst_.uhstoptions.html" class="tsd-kind-icon">Uhst<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_uhst_.uhstoptions.html#apiclient" class="tsd-kind-icon">api<wbr>Client</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_uhst_.uhstoptions.html#apiurl" class="tsd-kind-icon">api<wbr>Url</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="_uhst_.uhstoptions.html#debug" class="tsd-kind-icon">debug</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_uhst_.uhstoptions.html#meetingpointclient" class="tsd-kind-icon">meeting<wbr>Point<wbr>Client</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_uhst_.uhstoptions.html#meetingpointurl" class="tsd-kind-icon">meeting<wbr>Point<wbr>Url</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_uhst_.uhstoptions.html#rtcconfiguration" class="tsd-kind-icon">rtc<wbr>Configuration</a>
+								<a href="_uhst_.uhstoptions.html#socketprovider" class="tsd-kind-icon">socket<wbr>Provider</a>
 							</li>
 						</ul>
 					</li>

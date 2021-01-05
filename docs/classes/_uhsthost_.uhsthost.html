@@ -92,10 +92,11 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#_ee" class="tsd-kind-icon">_ee</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#apiclient" class="tsd-kind-icon">api<wbr>Client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#apimessagestream" class="tsd-kind-icon">api<wbr>Message<wbr>Stream</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#clients" class="tsd-kind-icon">clients</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#configuration" class="tsd-kind-icon">configuration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#debug" class="tsd-kind-icon">debug</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#socketprovider" class="tsd-kind-icon">socket<wbr>Provider</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -107,6 +108,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="_uhsthost_.uhsthost.html#disconnect" class="tsd-kind-icon">disconnect</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#handlemessage" class="tsd-kind-icon">handle<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="_uhsthost_.uhsthost.html#init" class="tsd-kind-icon">init</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="_uhsthost_.uhsthost.html#off" class="tsd-kind-icon">off</a></li>
@@ -123,13 +125,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Uhst<wbr>Host<span class="tsd-signature-symbol">(</span>apiClient<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a>, configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RTCConfiguration</span>, requestedHostId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_uhsthost_.uhsthost.html" class="tsd-signature-type">UhstHost</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Uhst<wbr>Host<span class="tsd-signature-symbol">(</span>apiClient<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a>, socketProvider<span class="tsd-signature-symbol">: </span><a href="../interfaces/_contracts_uhstsocketprovider_.uhstsocketprovider.html" class="tsd-signature-type">UhstSocketProvider</a>, requestedHostId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_uhsthost_.uhsthost.html" class="tsd-signature-type">UhstHost</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L17">lib/UhstHost.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L19">lib/UhstHost.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -138,7 +140,7 @@
 									<h5>apiClient: <a href="../interfaces/_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a></h5>
 								</li>
 								<li>
-									<h5>configuration: <span class="tsd-signature-type">RTCConfiguration</span></h5>
+									<h5>socketProvider: <a href="../interfaces/_contracts_uhstsocketprovider_.uhstsocketprovider.html" class="tsd-signature-type">UhstSocketProvider</a></h5>
 								</li>
 								<li>
 									<h5>requestedHostId: <span class="tsd-signature-type">string</span></h5>
@@ -160,7 +162,7 @@
 					<div class="tsd-signature tsd-kind-icon">_ee<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_uhsthost_.html#hosteventset" class="tsd-signature-type">HostEventSet</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new EventEmitter&lt;HostEventSet&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L15">lib/UhstHost.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L16">lib/UhstHost.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -170,17 +172,27 @@
 					<div class="tsd-signature tsd-kind-icon">api<wbr>Client<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_contracts_uhstapiclient_.uhstapiclient.html" class="tsd-signature-type">UhstApiClient</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L19">lib/UhstHost.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L21">lib/UhstHost.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="apimessagestream" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> api<wbr>Message<wbr>Stream</h3>
+					<div class="tsd-signature tsd-kind-icon">api<wbr>Message<wbr>Stream<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_contracts_uhstapiclient_.messagestream.html" class="tsd-signature-type">MessageStream</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L19">lib/UhstHost.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a name="clients" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> clients</h3>
-					<div class="tsd-signature tsd-kind-icon">clients<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map&lt;string, UhstSocket&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">clients<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_contracts_uhstsocket_.uhstsocket.html" class="tsd-signature-type">UhstSocket</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map&lt;string, UhstSocket&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L17">lib/UhstHost.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L17">lib/UhstHost.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,17 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_models_hostconfiguration_.hostconfiguration.html" class="tsd-signature-type">HostConfiguration</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L16">lib/UhstHost.ts:16</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
-					<a name="configuration" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> configuration</h3>
-					<div class="tsd-signature tsd-kind-icon">configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RTCConfiguration</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L19">lib/UhstHost.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L18">lib/UhstHost.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -210,7 +212,17 @@
 					<div class="tsd-signature tsd-kind-icon">debug<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L19">lib/UhstHost.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L21">lib/UhstHost.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="socketprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> socket<wbr>Provider</h3>
+					<div class="tsd-signature tsd-kind-icon">socket<wbr>Provider<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_contracts_uhstsocketprovider_.uhstsocketprovider.html" class="tsd-signature-type">UhstSocketProvider</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L21">lib/UhstHost.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -227,7 +239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L25">lib/UhstHost.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L27">lib/UhstHost.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -237,6 +249,23 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="disconnect" class="tsd-anchor"></a>
+					<h3>disconnect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">disconnect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L43">lib/UhstHost.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a name="handlemessage" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> handle<wbr>Message</h3>
@@ -247,7 +276,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L41">lib/UhstHost.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L47">lib/UhstHost.ts:47</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -270,7 +299,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L54">lib/UhstHost.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L60">lib/UhstHost.ts:60</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -293,7 +322,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L37">lib/UhstHost.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L39">lib/UhstHost.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -325,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L29">lib/UhstHost.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L31">lib/UhstHost.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -357,7 +386,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/c94666f/lib/UhstHost.ts#L33">lib/UhstHost.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/uhst/uhst-client-js/blob/f495dd8/lib/UhstHost.ts#L35">lib/UhstHost.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -400,6 +429,12 @@
 						<a href="../modules/_apiclient_.html">&quot;<wbr>Api<wbr>Client&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_relaysocket_.html">&quot;<wbr>Relay<wbr>Socket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_relaysocketprovider_.html">&quot;<wbr>Relay<wbr>Socket<wbr>Provider&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_uhst_.html">&quot;UHST&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
@@ -409,10 +444,19 @@
 						<a href="../modules/_uhsthost_.html">&quot;<wbr>Uhst<wbr>Host&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
-						<a href="../modules/_uhstsocket_.html">&quot;<wbr>Uhst<wbr>Socket&quot;</a>
+						<a href="../modules/_webrtcsocket_.html">&quot;<wbr>WebRTCSocket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_webrtcsocketprovider_.html">&quot;<wbr>WebRTCSocket<wbr>Provider&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_contracts_uhstapiclient_.html">&quot;contracts/<wbr>Uhst<wbr>Api<wbr>Client&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_contracts_uhstsocket_.html">&quot;contracts/<wbr>Uhst<wbr>Socket&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_contracts_uhstsocketprovider_.html">&quot;contracts/<wbr>Uhst<wbr>Socket<wbr>Provider&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_clientconfiguration_.html">&quot;models/<wbr>Client<wbr>Configuration&quot;</a>
@@ -425,6 +469,9 @@
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_message_.html">&quot;models/<wbr>Message&quot;</a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-external">
+						<a href="../modules/_models_relaymessage_.html">&quot;models/<wbr>Relay<wbr>Message&quot;</a>
 					</li>
 					<li class=" tsd-kind-module tsd-is-external">
 						<a href="../modules/_models_socketparams_.html">&quot;models/<wbr>Socket<wbr>Params&quot;</a>
@@ -451,19 +498,25 @@
 								<a href="_uhsthost_.uhsthost.html#apiclient" class="tsd-kind-icon">api<wbr>Client</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="_uhsthost_.uhsthost.html#apimessagestream" class="tsd-kind-icon">api<wbr>Message<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="_uhsthost_.uhsthost.html#clients" class="tsd-kind-icon">clients</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="_uhsthost_.uhsthost.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
-								<a href="_uhsthost_.uhsthost.html#configuration" class="tsd-kind-icon">configuration</a>
+								<a href="_uhsthost_.uhsthost.html#debug" class="tsd-kind-icon">debug</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
-								<a href="_uhsthost_.uhsthost.html#debug" class="tsd-kind-icon">debug</a>
+								<a href="_uhsthost_.uhsthost.html#socketprovider" class="tsd-kind-icon">socket<wbr>Provider</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="_uhsthost_.uhsthost.html#hostid" class="tsd-kind-icon">host<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="_uhsthost_.uhsthost.html#disconnect" class="tsd-kind-icon">disconnect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="_uhsthost_.uhsthost.html#handlemessage" class="tsd-kind-icon">handle<wbr>Message</a>

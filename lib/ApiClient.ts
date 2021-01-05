@@ -1,6 +1,6 @@
-import { UhstApiClient, MessageHandler } from "./contracts/UhstApiClient";
+import { UhstApiClient, MessageHandler, MessageStream } from "./contracts/UhstApiClient";
 import { ClientConfiguration, HostConfiguration, Message } from "./models";
-import { InvalidToken, InvalidHostId, HostIdAlreadyInUse, MeetingPointError, MeetingPointUnreachable, InvalidClientOrHostId } from "./UhstErrors";
+import { InvalidToken, InvalidHostId, HostIdAlreadyInUse, ApiError, ApiUnreachable, InvalidClientOrHostId } from "./UhstErrors";
 
 const REQUEST_OPTIONS = {
     method: 'POST',
@@ -20,7 +20,7 @@ export class ApiClient implements UhstApiClient {
             response = await fetch(`${this.apiUrl}?action=host&hostId=${hostId}`, REQUEST_OPTIONS);
         } catch (error) {
             console.log(error);
-            throw new MeetingPointUnreachable(error);
+            throw new ApiUnreachable(error);
         }
         if (response.status == 200) {
             const jsonResponse = await response.json();
@@ -28,7 +28,7 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 400) {
             throw new HostIdAlreadyInUse(response.statusText);
         } else {
-            throw new MeetingPointError(`${response.status} ${response.statusText}`);
+            throw new ApiError(`${response.status} ${response.statusText}`);
         }
     }
 
@@ -38,7 +38,7 @@ export class ApiClient implements UhstApiClient {
             response = await fetch(`${this.apiUrl}?action=join&hostId=${hostId}`, REQUEST_OPTIONS);
         } catch (error) {
             console.log(error);
-            throw new MeetingPointUnreachable(error);
+            throw new ApiUnreachable(error);
         }
         if (response.status == 200) {
             const jsonResponse = await response.json();
@@ -46,7 +46,7 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 400) {
             throw new InvalidHostId(response.statusText);
         } else {
-            throw new MeetingPointError(`${response.status} ${response.statusText}`);
+            throw new ApiError(`${response.status} ${response.statusText}`);
         }
     }
 
@@ -60,7 +60,7 @@ export class ApiClient implements UhstApiClient {
             });
         } catch (error) {
             console.log(error);
-            throw new MeetingPointUnreachable(error);
+            throw new ApiUnreachable(error);
         }
         if (response.status == 200) {
             return;
@@ -69,26 +69,25 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 401) {
             throw new InvalidToken(response.statusText);
         } else {
-            throw new MeetingPointError(`${response.status} ${response.statusText}`);
+            throw new ApiError(`${response.status} ${response.statusText}`);
         }
     }
 
-    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): EventSource {
-        try {
+    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): Promise<MessageStream> {
         const url = receiveUrl ?? this.apiUrl;
-        const stream = new EventSource(`${url}?token=${token}`);
-        stream.onerror = (ev: Event) => {
-            throw new MeetingPointError("EventSource failed.");
-        };
-        stream.addEventListener("message", (evt: MessageEvent) => {
-            const message: Message = JSON.parse(evt.data);
-            handler(message);
+        return new Promise<MessageStream>((resolve, reject) => {
+            const stream = new EventSource(`${url}?token=${token}`);
+            stream.onopen = (ev: Event) => {
+                resolve(stream);
+            };
+            stream.onerror = (ev: Event) => {
+                reject(new ApiError(ev));
+            };
+            stream.addEventListener("message", (evt: MessageEvent) => {
+                const message: Message = JSON.parse(evt.data);
+                handler(message);
+            });
         });
-        return stream;
-    } catch (error) {
-        console.log(error);
-        throw new MeetingPointError(error);
-    }
     }
 
 }

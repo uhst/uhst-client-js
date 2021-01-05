@@ -1,8 +1,9 @@
 import JwtDecode from "jwt-decode";
 import { EventEmitter } from "inf-ee";
-import { UhstApiClient } from "./contracts/UhstApiClient";
-import { UhstSocket } from "./UhstSocket";
+import { MessageStream, UhstApiClient } from "./contracts/UhstApiClient";
 import { HostConfiguration, HostMessage } from "./models";
+import { UhstSocket } from "./contracts/UhstSocket";
+import { UhstSocketProvider } from "./contracts/UhstSocketProvider";
 
 type HostEventSet = {
     ready: () => void,
@@ -13,10 +14,11 @@ type HostEventSet = {
 
 export class UhstHost {
     private _ee = new EventEmitter<HostEventSet>();
-    private config: HostConfiguration;
     private clients = new Map<string, UhstSocket>();
+    private config: HostConfiguration;
+    private apiMessageStream: MessageStream;
 
-    constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, requestedHostId: string, private debug: boolean) {
+    constructor(private apiClient: UhstApiClient, private socketProvider: UhstSocketProvider, requestedHostId: string, private debug: boolean) {
         this.handleMessage = this.handleMessage.bind(this);
         
         this.init(requestedHostId);
@@ -38,11 +40,15 @@ export class UhstHost {
         this._ee.off(eventName, handler);
     }
 
+    disconnect() {
+        this.apiMessageStream?.close();
+    }
+
     private handleMessage(message: HostMessage) {
         const clientId: string = (JwtDecode(message.responseToken) as any).clientId;
         let hostSocket = this.clients.get(clientId);
         if (!hostSocket) {
-            const socket = new UhstSocket(this.apiClient, this.configuration, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl}, this.debug);
+            const socket = this.socketProvider.createUhstSocket(this.apiClient, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl}, this.debug);
             if (this.debug) { this._ee.emit("diagnostic", "Host received client connection from clientId: "+clientId); }
             this._ee.emit("connection", socket);
             this.clients.set(clientId, socket);
@@ -54,9 +60,9 @@ export class UhstHost {
     private async init(requestedHostId: string) {
         try {
             this.config = await this.apiClient.initHost(requestedHostId);
-            if (this.debug) { this._ee.emit("diagnostic", "Host configuration received from signalling server."); }
-            this.apiClient.subscribeToMessages(this.config.hostToken, this.handleMessage, this.config.receiveUrl);
-            if (this.debug) { this._ee.emit("diagnostic", "Host subscribed to messages from signalling server."); }
+            if (this.debug) { this._ee.emit("diagnostic", "Host configuration received from server."); }
+            this.apiMessageStream = await this.apiClient.subscribeToMessages(this.config.hostToken, this.handleMessage, this.config.receiveUrl);
+            if (this.debug) { this._ee.emit("diagnostic", "Host subscribed to messages from server."); }
             this._ee.emit("ready");
         } catch (error) {
             if (this.debug) { this._ee.emit("diagnostic", "Host failed subscribing to messages: "+JSON.stringify(error)); }

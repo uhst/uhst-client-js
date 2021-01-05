@@ -30,18 +30,18 @@ export class InvalidClientOrHostId extends Error {
     }
 }
 
-export class MeetingPointUnreachable extends Error {
+export class ApiUnreachable extends Error {
     constructor(message?: string) {
         super(message);
         Object.setPrototypeOf(this, new.target.prototype);
-        this.name = "MeetingPointUnreachable"; 
+        this.name = "ApiUnreachable"; 
     }
 }
 
-export class MeetingPointError extends Error {
-    constructor(message?: string) {
+export class ApiError extends Error {
+    constructor(message?: any) {
         super(message);
         Object.setPrototypeOf(this, new.target.prototype);
-        this.name = "MeetingPointError"; 
+        this.name = "ApiError"; 
     }
 }

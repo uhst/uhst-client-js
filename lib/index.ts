@@ -3,3 +3,4 @@
  */
 export * from "./UHST";
 export * from "./UhstErrors";
+export * from "./WebRTCSocketProvider";

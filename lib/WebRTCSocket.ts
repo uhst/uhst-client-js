@@ -1,16 +1,9 @@
 import { EventEmitter } from "inf-ee";
 import { UhstApiClient, MessageStream } from "./contracts/UhstApiClient";
+import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
 import { Message, HostSocketParams, ClientSocketParams } from "./models";
 
-type SocketEventSet = {
-    open: () => void,
-    message: (data: any) => void,
-    error: (error: Error) => void,
-    close: () => void,
-    diagnostic: (message: string) => void
-}
-
-export class UhstSocket {
+export class WebRTCSocket implements UhstSocket {
     private _ee = new EventEmitter<SocketEventSet>();
     private _pendingCandidates: (RTCIceCandidate | RTCIceCandidateInit)[] = [];
     private _offerAccepted = false;
@@ -30,7 +23,7 @@ export class UhstSocket {
         this.configureDataChannel = this.configureDataChannel.bind(this);
         this.createConnection = this.createConnection.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
-        this.disconnect = this.disconnect.bind(this);
+        this.close = this.close.bind(this);
 
         this.connection = this.createConnection();
 
@@ -71,7 +64,7 @@ export class UhstSocket {
         this.dataChannel.send(message);
     }
 
-    disconnect() {
+    close() {
         this.connection.close();
     }
 
@@ -176,11 +169,11 @@ export class UhstSocket {
             if (this.debug) { this._ee.emit("diagnostic", "Data channel created on client."); }
             this.configureDataChannel();
             const config = await this.apiClient.initClient(hostId);
-            if (this.debug) { this._ee.emit("diagnostic", "Client configuration received from signalling server."); }
+            if (this.debug) { this._ee.emit("diagnostic", "Client configuration received from server."); }
             this.token = config.clientToken;
             this.sendUrl = config.sendUrl;
-            this.apiMessageStream = this.apiClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
-            if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from signalling server."); }
+            this.apiMessageStream = await this.apiClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
+            if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from server."); }
             const offer = await this.connection.createOffer();
             this.apiClient.sendMessage(this.token, offer, this.sendUrl).then(() => {
                 if (this.debug) { this._ee.emit("diagnostic", "Client offer sent to host: " + JSON.stringify(offer)); }
