@@ -4,9 +4,13 @@
 
 [![Build Status](https://travis-ci.org/uhst/uhst-client-js.svg?branch=master)](https://travis-ci.org/uhst/uhst-client-js)
 [![NPM Version](https://badge.fury.io/js/uhst.svg)](https://badge.fury.io/js/uhst)
+[![Gitter](https://badges.gitter.im/uhst/community.svg)](https://gitter.im/uhst/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Documentation
 Visit our website for more complete documentation: [https://docs.uhst.io](https://docs.uhst.io).
+
+## Support and discussions
+Join us on [Gitter](https://gitter.im/uhst/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link) or StackOverflow .
 
 ## Installation
 
