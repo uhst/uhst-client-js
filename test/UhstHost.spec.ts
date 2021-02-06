@@ -63,4 +63,46 @@ describe("# UhstHost", () => {
 
         expect(mockApi.initHost).to.have.been.calledWith("testHostId");
     });
+
+    it("can broadcast string messages", (done) => {
+        const mockApi = <UhstApiClient>{};
+        const mockSocketProvider = <UhstSocketProvider>{};
+        let messageHandler: Function;
+        const mockStreamClose = stub();
+        const mockToken = "testHostToken";
+
+        mockApi.initHost = stub().returns(<HostConfiguration>{
+            hostId: "testHostId",
+            hostToken: "testHostToken",
+            receiveUrl: "testReceiveUrl",
+            sendUrl: "testSendUrl",
+        });
+
+        mockApi.subscribeToMessages = (token, handler, receiveUrl) => {
+            expect(token).to.equal("testHostToken");
+            expect(receiveUrl).to.equal("testReceiveUrl");
+            messageHandler = handler;
+            return Promise.resolve(<MessageStream>{
+                close: mockStreamClose
+            });
+        }
+
+        mockApi.sendMessage = (token: string, message: any, sendUrl?: string): Promise<void> => {
+            expect(token).to.equal(mockToken);
+            expect(sendUrl).to.equal("testSendUrl");
+            expect(message.type).to.equal("string");
+            expect(message.payload).to.equal("Test Message");
+            return Promise.resolve();
+        }
+  
+        const uhstHost: UhstHost = new UhstHost(mockApi, mockSocketProvider, "testHostId", false);
+        uhstHost.on("error", console.error);
+        uhstHost.on("ready", () => {
+            expect(uhstHost.hostId).to.equal("testHostId");
+            uhstHost.broadcast("Test Message");
+            done();
+        });
+
+        expect(mockApi.initHost).to.have.been.calledWith("testHostId");
+    });
 });

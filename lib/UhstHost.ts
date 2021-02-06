@@ -28,6 +28,22 @@ export class UhstHost {
         return this.config.hostId;
     }
 
+    broadcast(message: string): void;
+    broadcast(message: Blob): void;
+    broadcast(message: ArrayBuffer): void;
+    broadcast(message: ArrayBufferView): void;
+    broadcast(message: any) {
+        const envelope = {
+            "type": "string",
+            "payload": message
+        }
+        this.apiClient.sendMessage(this.config.hostToken, envelope, this.config.sendUrl).catch((error) => {
+            if (this.debug) { this._ee.emit("diagnostic", "Failed sending message: " + JSON.stringify(error)); }
+            this._ee.emit("error", error);
+        });
+        if (this.debug) { this._ee.emit("diagnostic", "Sent message " + message); }
+    }
+
     on<EventName extends keyof HostEventSet>(eventName: EventName, handler: HostEventSet[EventName]) {
         this._ee.on(eventName, handler);
     }

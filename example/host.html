@@ -1,6 +1,6 @@
 <script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST({ socketProvider: new uhst.WebRTCSocketProvider(), apiUrl: "http://localhost:3000", debug: true });
+    var test = new uhst.UHST({ apiUrl: "http://localhost:3000", debug: true });
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");
@@ -23,6 +23,7 @@
         ws.on("diagnostic", console.log);
         ws.on("message", function incoming(message) {
             console.log("Host received: %s", message);
+            host.broadcast("Host received: "+ message);
         });
         ws.on("open", function ready() {
             ws.send("something");
