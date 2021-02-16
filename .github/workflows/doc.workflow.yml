@@ -18,6 +18,7 @@ jobs:
           npm install
           npm run dist
           cd docs
+          touch .nojekyll
           git init
           # type configurations: your user.email and user.name followed lines 
           # git config --global user.email your_email 
