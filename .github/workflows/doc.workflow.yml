@@ -2,7 +2,7 @@ name: uhst_client_docs
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   build:
     name: Publishing UHST Client Docs to GitHub pages
