@@ -1,15 +1,15 @@
 import { EventEmitter } from "inf-ee";
-import { MessageStream, UhstApiClient } from "./contracts/UhstApiClient";
+import { MessageStream, UhstRelayClient } from "./contracts/UhstRelayClient";
 import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
 import { ClientSocketParams, HostSocketParams, Message } from "./models";
 
 export class RelaySocket implements UhstSocket {
     private _ee = new EventEmitter<SocketEventSet>();
     private token: string;
-    private apiMessageStream: MessageStream;
+    private relayMessageStream: MessageStream;
     private sendUrl?: string;
 
-    constructor(private apiClient: UhstApiClient, params: HostSocketParams | ClientSocketParams, private debug: boolean) {
+    constructor(private relayClient: UhstRelayClient, params: HostSocketParams | ClientSocketParams, private debug: boolean) {
         this.send = this.send.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.close = this.close.bind(this);
@@ -54,7 +54,7 @@ export class RelaySocket implements UhstSocket {
             "type": "string",
             "payload": message
         }
-        this.apiClient.sendMessage(this.token, envelope, this.sendUrl).catch((error) => {
+        this.relayClient.sendMessage(this.token, envelope, this.sendUrl).catch((error) => {
             if (this.debug) { this._ee.emit("diagnostic", "Failed sending message: " + JSON.stringify(error)); }
             this._ee.emit("error", error);
         });
@@ -62,7 +62,7 @@ export class RelaySocket implements UhstSocket {
     }
 
     close() {
-        this.apiMessageStream?.close();
+        this.relayMessageStream?.close();
     }
 
     handleMessage(message: Message) {
@@ -73,11 +73,11 @@ export class RelaySocket implements UhstSocket {
 
     private async initClient(hostId: string) {
         try {
-            const config = await this.apiClient.initClient(hostId);
+            const config = await this.relayClient.initClient(hostId);
             if (this.debug) { this._ee.emit("diagnostic", "Client configuration received from server."); }
             this.token = config.clientToken;
             this.sendUrl = config.sendUrl;
-            this.apiMessageStream = await this.apiClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
+            this.relayMessageStream = await this.relayClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
             if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from server."); }
             this._ee.emit("open");
         } catch (error) {

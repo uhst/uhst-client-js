@@ -1,6 +1,6 @@
 <script src="../uhst.umd.js"></script>
 <script>
-    var test = new uhst.UHST({ apiUrl: "http://localhost:3000", debug: true });
+    var test = new uhst.UHST({ relayUrl: "http://localhost:3000", debug: true });
     var host = test.host("testHost");
     host.on("ready", () => {
         alert("Host ready");

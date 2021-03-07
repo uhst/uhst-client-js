@@ -1,6 +1,6 @@
-import { UhstApiClient, MessageHandler, MessageStream } from "./contracts/UhstApiClient";
+import { UhstRelayClient, MessageHandler, MessageStream } from "./contracts/UhstRelayClient";
 import { ClientConfiguration, HostConfiguration, Message } from "./models";
-import { InvalidToken, InvalidHostId, HostIdAlreadyInUse, ApiError, ApiUnreachable, InvalidClientOrHostId } from "./UhstErrors";
+import { InvalidToken, InvalidHostId, HostIdAlreadyInUse, RelayError, RelayUnreachable, InvalidClientOrHostId } from "./UhstErrors";
 
 const REQUEST_OPTIONS = {
     method: 'POST',
@@ -9,18 +9,18 @@ const REQUEST_OPTIONS = {
     }
 };
 
-export class ApiClient implements UhstApiClient {
-    constructor(private apiUrl: string) {
+export class RelayClient implements UhstRelayClient {
+    constructor(private relayUrl: string) {
 
     }
 
     async initHost(hostId: string): Promise<HostConfiguration> {
         let response: Response;
         try {
-            response = await fetch(`${this.apiUrl}?action=host&hostId=${hostId}`, REQUEST_OPTIONS);
+            response = await fetch(`${this.relayUrl}?action=host&hostId=${hostId}`, REQUEST_OPTIONS);
         } catch (error) {
             console.log(error);
-            throw new ApiUnreachable(error);
+            throw new RelayUnreachable(error);
         }
         if (response.status == 200) {
             const jsonResponse = await response.json();
@@ -28,17 +28,17 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 400) {
             throw new HostIdAlreadyInUse(response.statusText);
         } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
+            throw new RelayError(`${response.status} ${response.statusText}`);
         }
     }
 
     async initClient(hostId: string): Promise<ClientConfiguration> {
         let response: Response;
         try {
-            response = await fetch(`${this.apiUrl}?action=join&hostId=${hostId}`, REQUEST_OPTIONS);
+            response = await fetch(`${this.relayUrl}?action=join&hostId=${hostId}`, REQUEST_OPTIONS);
         } catch (error) {
             console.log(error);
-            throw new ApiUnreachable(error);
+            throw new RelayUnreachable(error);
         }
         if (response.status == 200) {
             const jsonResponse = await response.json();
@@ -46,12 +46,12 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 400) {
             throw new InvalidHostId(response.statusText);
         } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
+            throw new RelayError(`${response.status} ${response.statusText}`);
         }
     }
 
     async sendMessage(token: string, message: any, sendUrl?: string): Promise<void> {
-        const url = sendUrl ?? this.apiUrl;
+        const url = sendUrl ?? this.relayUrl;
         let response: Response;
         try {
             response = await fetch(`${url}?token=${token}`, {
@@ -60,7 +60,7 @@ export class ApiClient implements UhstApiClient {
             });
         } catch (error) {
             console.log(error);
-            throw new ApiUnreachable(error);
+            throw new RelayUnreachable(error);
         }
         if (response.status == 200) {
             return;
@@ -69,19 +69,19 @@ export class ApiClient implements UhstApiClient {
         } else if (response.status == 401) {
             throw new InvalidToken(response.statusText);
         } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
+            throw new RelayError(`${response.status} ${response.statusText}`);
         }
     }
 
     subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): Promise<MessageStream> {
-        const url = receiveUrl ?? this.apiUrl;
+        const url = receiveUrl ?? this.relayUrl;
         return new Promise<MessageStream>((resolve, reject) => {
             const stream = new EventSource(`${url}?token=${token}`);
             stream.onopen = (ev: Event) => {
                 resolve(stream);
             };
             stream.onerror = (ev: Event) => {
-                reject(new ApiError(ev));
+                reject(new RelayError(ev));
             };
             stream.addEventListener("message", (evt: MessageEvent) => {
                 const message: Message = JSON.parse(evt.data);
