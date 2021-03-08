@@ -45,3 +45,19 @@ export class RelayError extends Error {
         this.name = "RelayError"; 
     }
 }
+
+export class NetworkUnreachable extends Error {
+    constructor(message?: string) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = "NetworkUnreachable"; 
+    }
+}
+
+export class NetworkError extends Error {
+    constructor(message?: any) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = "NetworkError"; 
+    }
+}

@@ -15,7 +15,7 @@ describe("# UHST", () => {
         const mockSocketProvider: UhstSocketProvider = <UhstSocketProvider>{};
         expect(new UHST({ socketProvider: mockSocketProvider })).to.not.be.null;
     });
-    it("should accept meetingPointUrl", () => {
+    it("should accept relayUrl", () => {
         const relayUrl = "test"
         expect(new UHST({ relayUrl: relayUrl })).to.not.be.null;
     });

@@ -1,15 +1,17 @@
 import { UhstRelayClient } from "./contracts/UhstRelayClient";
 import { RelayClient } from "./RelayClient";
+import { ApiClient } from "./ApiClient";
 import { UhstSocket } from "./contracts/UhstSocket";
 import { UhstSocketProvider } from "./contracts/UhstSocketProvider";
 import { UhstHost } from "./UhstHost";
 import { RelaySocketProvider } from "./RelaySocketProvider";
+import { RelayClientProvider } from "./RelayClientProvider";
 
 export interface UhstOptions {
 
     socketProvider?: UhstSocketProvider,
     /**
-     * Relay client for communication with the server,
+     * Relay client for communication with the relay,
      * normally used for testing or if implementing 
      * [[UhstRelayClient | custom  protocol]].
      * If both [[relayClient]] and [[relayUrl]] are
@@ -17,9 +19,14 @@ export interface UhstOptions {
      */
     relayClient?: UhstRelayClient,
     /**
-     * Url to a server implementing the UHST protocol.
+     * Url to a server implementing the UHST relay protocol. All
+     * clients connecting to the same hostId must use the same
+     * relayUrl as the host.
      * If not defined and [[relayClient]] is also not defined, then
-     * this library will fallback to [[UHST_RELAY_URL | a default server URL]].
+     * this library will connect to a random public relay.
+     * If no relayUrl is specified on the host then the library will
+     * automatically use the same random public relay for all clients
+     * connecting to the same hostId.
      */
     relayUrl?: string,
     /**
@@ -30,12 +37,6 @@ export interface UhstOptions {
 }
 
 export class UHST {
-    /**
-    * Fallback URL to a UHST RELAY (server). If no
-    * configuration is provided or [[relayUrl]] is not defined in
-    * the configuration then this URL will be used.
-    */
-    private static UHST_RELAY_URL = "https://demo.uhst.io/";
     private relayClient: UhstRelayClient;
     private debug: boolean;
     private socketProvider: UhstSocketProvider;
@@ -47,7 +48,7 @@ export class UHST {
         } else if (options.relayUrl) {
             this.relayClient = new RelayClient(options.relayUrl);
         } else {
-            this.relayClient = new RelayClient(UHST.UHST_RELAY_URL);
+            this.relayClient = new ApiClient(new RelayClientProvider());
         }
         this.socketProvider = options.socketProvider ?? new RelaySocketProvider();
     }
@@ -56,7 +57,7 @@ export class UHST {
         return this.socketProvider.createUhstSocket(this.relayClient, {type: "client", hostId}, this.debug);
     }
 
-    host(hostId: string): UhstHost {
+    host(hostId?: string): UhstHost {
         return new UhstHost(this.relayClient, this.socketProvider, hostId, this.debug);
     }
 

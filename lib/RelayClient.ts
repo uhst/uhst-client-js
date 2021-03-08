@@ -14,7 +14,7 @@ export class RelayClient implements UhstRelayClient {
 
     }
 
-    async initHost(hostId: string): Promise<HostConfiguration> {
+    async initHost(hostId?: string): Promise<HostConfiguration> {
         let response: Response;
         try {
             response = await fetch(`${this.relayUrl}?action=host&hostId=${hostId}`, REQUEST_OPTIONS);

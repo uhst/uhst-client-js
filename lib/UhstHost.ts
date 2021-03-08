@@ -18,7 +18,7 @@ export class UhstHost {
     private config: HostConfiguration;
     private relayMessageStream: MessageStream;
 
-    constructor(private relayClient: UhstRelayClient, private socketProvider: UhstSocketProvider, requestedHostId: string, private debug: boolean) {
+    constructor(private relayClient: UhstRelayClient, private socketProvider: UhstSocketProvider, requestedHostId: string | undefined, private debug: boolean) {
         this.handleMessage = this.handleMessage.bind(this);
         
         this.init(requestedHostId);
@@ -73,7 +73,7 @@ export class UhstHost {
         hostSocket.handleMessage(message);
     }
 
-    private async init(requestedHostId: string) {
+    private async init(requestedHostId?: string) {
         try {
             this.config = await this.relayClient.initHost(requestedHostId);
             if (this.debug) { this._ee.emit("diagnostic", "Host configuration received from server."); }
