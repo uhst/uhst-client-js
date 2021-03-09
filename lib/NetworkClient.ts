@@ -1,10 +1,7 @@
 import { NetworkError, NetworkUnreachable } from './UhstErrors';
 
 const REQUEST_OPTIONS = {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  method: 'POST'
 };
 
 export class NetworkClient {
@@ -17,7 +14,7 @@ export class NetworkClient {
       if (response.status == 200) {
         return response.json();
       } else {
-        throw new NetworkError(`${response.status} ${response.statusText}`);
+        throw new NetworkError(response.status, `${response.statusText}`);
       }
     } catch (error) {
       console.log(error);

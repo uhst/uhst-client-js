@@ -55,9 +55,9 @@ export class NetworkUnreachable extends Error {
 }
 
 export class NetworkError extends Error {
-    constructor(message?: any) {
+    constructor(public responseCode: number, message?: any) {
         super(message);
         Object.setPrototypeOf(this, new.target.prototype);
-        this.name = "NetworkError"; 
+        this.name = "NetworkError";
     }
 }
