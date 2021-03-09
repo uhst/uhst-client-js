@@ -1,4 +1,4 @@
-import { UhstApiClient } from "./contracts/UhstApiClient";
+import { UhstRelayClient } from "./contracts/UhstRelayClient";
 import { UhstSocket } from "./contracts/UhstSocket";
 import { UhstSocketProvider } from "./contracts/UhstSocketProvider";
 import { ClientSocketParams, HostSocketParams } from "./models";
@@ -15,7 +15,7 @@ export class WebRTCSocketProvider implements UhstSocketProvider {
         this.rtcConfiguration = configuration ?? { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:global.stun.twilio.com:3478" }] };
     }
 
-    createUhstSocket(apiClient: UhstApiClient, params: ClientSocketParams | HostSocketParams, debug: boolean): UhstSocket {
-        return new WebRTCSocket(apiClient, this.rtcConfiguration, params, debug);
+    createUhstSocket(relayClient: UhstRelayClient, params: ClientSocketParams | HostSocketParams, debug: boolean): UhstSocket {
+        return new WebRTCSocket(relayClient, this.rtcConfiguration, params, debug);
     }
 }

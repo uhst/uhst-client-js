@@ -6,8 +6,8 @@ export interface MessageHandler {
 export interface MessageStream {
     close():void;
 }
-export interface UhstApiClient {
-    initHost(hostId: string): Promise<HostConfiguration>;
+export interface UhstRelayClient {
+    initHost(hostId?: string): Promise<HostConfiguration>;
     initClient(hostId: string): Promise<ClientConfiguration>;
     sendMessage(token: string, message: any, sendUrl?:string): Promise<any>;
     subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): Promise<MessageStream>;

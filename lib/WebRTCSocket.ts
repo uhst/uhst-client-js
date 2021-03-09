@@ -1,5 +1,5 @@
 import { EventEmitter } from "inf-ee";
-import { UhstApiClient, MessageStream } from "./contracts/UhstApiClient";
+import { UhstRelayClient, MessageStream } from "./contracts/UhstRelayClient";
 import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
 import { Message, HostSocketParams, ClientSocketParams } from "./models";
 
@@ -10,10 +10,10 @@ export class WebRTCSocket implements UhstSocket {
     private token: string;
     private connection: RTCPeerConnection;
     private dataChannel: RTCDataChannel;
-    private apiMessageStream: MessageStream;
+    private relayMessageStream: MessageStream;
     private sendUrl?: string;
 
-    constructor(private apiClient: UhstApiClient, private configuration: RTCConfiguration, params: HostSocketParams | ClientSocketParams, private debug: boolean) {
+    constructor(private relayClient: UhstRelayClient, private configuration: RTCConfiguration, params: HostSocketParams | ClientSocketParams, private debug: boolean) {
         this.send = this.send.bind(this);
         this.processIceCandidates = this.processIceCandidates.bind(this);
         this.initClient = this.initClient.bind(this);
@@ -94,9 +94,9 @@ export class WebRTCSocket implements UhstSocket {
     private configureDataChannel() {
         this.dataChannel.onopen = () => {
             if (this.debug) { this._ee.emit("diagnostic", "Data channel opened."); }
-            if (this.apiMessageStream) {
-                if (this.debug) { this._ee.emit("diagnostic", "Closing API message stream."); }
-                this.apiMessageStream.close();
+            if (this.relayMessageStream) {
+                if (this.debug) { this._ee.emit("diagnostic", "Closing RELAY message stream."); }
+                this.relayMessageStream.close();
             }
             this._ee.emit("open");
         };
@@ -133,7 +133,7 @@ export class WebRTCSocket implements UhstSocket {
     private handleIceCandidate(ev: RTCPeerConnectionIceEvent) {
         if (ev.candidate) {
             if (this.debug) { this._ee.emit("diagnostic", "Sending ICE candidate: " + JSON.stringify(ev.candidate)); }
-            this.apiClient.sendMessage(this.token, ev.candidate, this.sendUrl).catch((error) => {
+            this.relayClient.sendMessage(this.token, ev.candidate, this.sendUrl).catch((error) => {
                 if (this.debug) { this._ee.emit("diagnostic", "Failed sending ICE candidate: " + JSON.stringify(error)); }
                 this._ee.emit("error", error);
             });
@@ -151,7 +151,7 @@ export class WebRTCSocket implements UhstSocket {
         await this.connection.setRemoteDescription(description);
         if (this.debug) { this._ee.emit("diagnostic", "Set remote description on host: " + JSON.stringify(description)); }
         const answer = await this.connection.createAnswer();
-        this.apiClient.sendMessage(this.token, answer, this.sendUrl).then(() => {
+        this.relayClient.sendMessage(this.token, answer, this.sendUrl).then(() => {
             if (this.debug) { this._ee.emit("diagnostic", "Host sent offer answer: " + JSON.stringify(answer)); }
         }).catch((error) => {
             if (this.debug) { this._ee.emit("diagnostic", "Host failed responding to offer:" + JSON.stringify(error)); }
@@ -168,14 +168,14 @@ export class WebRTCSocket implements UhstSocket {
             this.dataChannel = this.connection.createDataChannel("uhst");
             if (this.debug) { this._ee.emit("diagnostic", "Data channel created on client."); }
             this.configureDataChannel();
-            const config = await this.apiClient.initClient(hostId);
+            const config = await this.relayClient.initClient(hostId);
             if (this.debug) { this._ee.emit("diagnostic", "Client configuration received from server."); }
             this.token = config.clientToken;
             this.sendUrl = config.sendUrl;
-            this.apiMessageStream = await this.apiClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
+            this.relayMessageStream = await this.relayClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
             if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from server."); }
             const offer = await this.connection.createOffer();
-            this.apiClient.sendMessage(this.token, offer, this.sendUrl).then(() => {
+            this.relayClient.sendMessage(this.token, offer, this.sendUrl).then(() => {
                 if (this.debug) { this._ee.emit("diagnostic", "Client offer sent to host: " + JSON.stringify(offer)); }
             }).catch((error) => {
                 if (this.debug) { this._ee.emit("diagnostic", "Client failed: " + JSON.stringify(error)); }

@@ -30,18 +30,34 @@ export class InvalidClientOrHostId extends Error {
     }
 }
 
-export class ApiUnreachable extends Error {
+export class RelayUnreachable extends Error {
     constructor(message?: string) {
         super(message);
         Object.setPrototypeOf(this, new.target.prototype);
-        this.name = "ApiUnreachable"; 
+        this.name = "RelayUnreachable"; 
     }
 }
 
-export class ApiError extends Error {
+export class RelayError extends Error {
     constructor(message?: any) {
         super(message);
         Object.setPrototypeOf(this, new.target.prototype);
-        this.name = "ApiError"; 
+        this.name = "RelayError"; 
+    }
+}
+
+export class NetworkUnreachable extends Error {
+    constructor(message?: string) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = "NetworkUnreachable"; 
+    }
+}
+
+export class NetworkError extends Error {
+    constructor(public responseCode: number, message?: any) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = "NetworkError";
     }
 }

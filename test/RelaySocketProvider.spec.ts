@@ -2,7 +2,7 @@ import sinonChai from "sinon-chai";
 import { expect, use } from "chai";
 import { describe } from "mocha";
 import { RelaySocketProvider } from "../lib/RelaySocketProvider";
-import { UhstApiClient } from "../lib/contracts/UhstApiClient";
+import { UhstRelayClient } from "../lib/contracts/UhstRelayClient";
 import { ClientSocketParams, HostSocketParams } from "../lib/models";
 
 use(sinonChai);
@@ -17,7 +17,7 @@ describe("# RelaySocketProvider", () => {
             type: "client",
             hostId: "testHostId"
         };
-        expect(provider.createUhstSocket(<UhstApiClient>{}, mockClientSocketParams, false)).to.not.be.null;
+        expect(provider.createUhstSocket(<UhstRelayClient>{}, mockClientSocketParams, false)).to.not.be.null;
     });
 
     it("should create RelaySocket for host", () => {
@@ -26,6 +26,6 @@ describe("# RelaySocketProvider", () => {
             type: "host",
             token: "responseToken"
         };
-        expect(provider.createUhstSocket(<UhstApiClient>{}, mockHostSocketParams, false)).to.not.be.null;
+        expect(provider.createUhstSocket(<UhstRelayClient>{}, mockHostSocketParams, false)).to.not.be.null;
     });
 });

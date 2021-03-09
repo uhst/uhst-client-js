@@ -38,14 +38,14 @@ Assuming you have loaded the library, first create a new instance:
 var test = new uhst.UHST();
 ```
 
-Refer to the documentation to learn about the options you can pass (including your own API / signalling server URL, WebRTC configuration, etc.) .
+Refer to the documentation to learn about the options you can pass (including your own relay server URL, WebRTC configuration, etc.) .
 
 #### Host
 Host in UHST is a peer which every other peer connects to. This concept is similar to listen-server in multiplayer games.
 The simplest way to create a new host is:
 
 ```JavaScript
-var host = test.host("testHost");
+var host = test.host();
 host.on("ready", () => {
     alert("Host %s ready", host.hostId);
 });
@@ -61,14 +61,17 @@ host.on("connection", function connection(uhstSocket) {
 });
 ```
 
-Note that your requested host id may not be accepted by the signalling server, you should always
-use the `hostId` you get after receiving a `ready` event when connecting to the host.
+Note that you can optionally specify a requested hostId when calling `host()` but it may not be 
+accepted by the relay server. You should always use the `hostId` you get after receiving a `ready` event
+when joining the host.<br>
+By default the generated host ids will follow this pattern: `<4-digit-relay-prefix>-<4-digit-host-id>`.<br>
+To pass the `hostId` to a client browser you can embed it in a URL parameter or a QR code.
 
 #### Client
 To connect to a host from another browser use the same `hostId` you received after `ready` event:
 
 ```JavaScript
-var client = test.join("testHost");
+var client = test.join(<host-id-from-host-ready-above>);
 client.on("open", function open() {
     client.send("hello");
 });
@@ -91,5 +94,5 @@ You can find UHST on GitHub; feel free to start an issue or create a pull reques
 
 ## License
 
-Copyright (c) 2020 Stefan Dimitrov<br>
+Copyright (c) 2021 Stefan Dimitrov<br>
 Licensed under MIT License.

@@ -1,7 +1,7 @@
 import sinonChai from "sinon-chai";
 import { expect, use } from "chai";
 import { stub } from "sinon";
-import { MessageStream, UhstApiClient } from "../lib/contracts/UhstApiClient";
+import { MessageStream, UhstRelayClient } from "../lib/contracts/UhstRelayClient";
 import { UhstSocket } from "../lib/contracts/UhstSocket";
 import { UhstSocketProvider } from "../lib/contracts/UhstSocketProvider";
 import { HostConfiguration, HostMessage, HostSocketParams } from "../lib/models";
@@ -11,21 +11,21 @@ use(sinonChai);
 
 describe("# UhstHost", () => {
     it("can host", (done) => {
-        const mockApi = <UhstApiClient>{};
+        const mockRelay = <UhstRelayClient>{};
         const mockSocketProvider = <UhstSocketProvider>{};
         const mockSocket = <UhstSocket>{};
         const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicmVzcG9uc2VUb2tlbiIsImhvc3RJZCI6InRlc3RIb3N0IiwiY2xpZW50SWQiOiI4ODk2OGUzYi03YTQ1LTQwMTMtYjY2OC1iNWIwMDIwMTQ2M2EiLCJpYXQiOjE1OTk4ODI1NjB9.Ck583aKIeEcEsvCVlNgpMgLrVM1JQQC4vB8PCaTU-pA";
         let messageHandler: Function;
         const mockStreamClose = stub();
 
-        mockApi.initHost = stub().returns(<HostConfiguration>{
+        mockRelay.initHost = stub().returns(<HostConfiguration>{
             hostId: "testHostId",
             hostToken: "testHostToken",
             receiveUrl: "testReceiveUrl",
             sendUrl: "testSendUrl",
         });
 
-        mockApi.subscribeToMessages = (token, handler, receiveUrl) => {
+        mockRelay.subscribeToMessages = (token, handler, receiveUrl) => {
             expect(token).to.equal("testHostToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handler;
@@ -39,15 +39,15 @@ describe("# UhstHost", () => {
             expect(message.body).to.equal("testClientMessage");
         }
 
-        mockSocketProvider.createUhstSocket = (apiClient, params: HostSocketParams, debug) => {
-            expect(apiClient).to.equal(mockApi);
+        mockSocketProvider.createUhstSocket = (relayClient, params: HostSocketParams, debug) => {
+            expect(relayClient).to.equal(mockRelay);
             expect(params.type).to.equal("host");
             expect(params.token).to.equal(mockToken);
             expect(params.sendUrl).to.equal("testSendUrl");
             return mockSocket;
         }
 
-        const uhstHost: UhstHost = new UhstHost(mockApi, mockSocketProvider, "testHostId", false);
+        const uhstHost: UhstHost = new UhstHost(mockRelay, mockSocketProvider, "testHostId", false);
         uhstHost.on("ready", () => {
             expect(uhstHost.hostId).to.equal("testHostId");
             messageHandler(<HostMessage>{
@@ -61,24 +61,24 @@ describe("# UhstHost", () => {
             done();
         });
 
-        expect(mockApi.initHost).to.have.been.calledWith("testHostId");
+        expect(mockRelay.initHost).to.have.been.calledWith("testHostId");
     });
 
     it("can broadcast string messages", (done) => {
-        const mockApi = <UhstApiClient>{};
+        const mockRelay = <UhstRelayClient>{};
         const mockSocketProvider = <UhstSocketProvider>{};
         let messageHandler: Function;
         const mockStreamClose = stub();
         const mockToken = "testHostToken";
 
-        mockApi.initHost = stub().returns(<HostConfiguration>{
+        mockRelay.initHost = stub().returns(<HostConfiguration>{
             hostId: "testHostId",
             hostToken: "testHostToken",
             receiveUrl: "testReceiveUrl",
             sendUrl: "testSendUrl",
         });
 
-        mockApi.subscribeToMessages = (token, handler, receiveUrl) => {
+        mockRelay.subscribeToMessages = (token, handler, receiveUrl) => {
             expect(token).to.equal("testHostToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handler;
@@ -87,7 +87,7 @@ describe("# UhstHost", () => {
             });
         }
 
-        mockApi.sendMessage = (token: string, message: any, sendUrl?: string): Promise<void> => {
+        mockRelay.sendMessage = (token: string, message: any, sendUrl?: string): Promise<void> => {
             expect(token).to.equal(mockToken);
             expect(sendUrl).to.equal("testSendUrl");
             expect(message.type).to.equal("string");
@@ -95,7 +95,7 @@ describe("# UhstHost", () => {
             return Promise.resolve();
         }
   
-        const uhstHost: UhstHost = new UhstHost(mockApi, mockSocketProvider, "testHostId", false);
+        const uhstHost: UhstHost = new UhstHost(mockRelay, mockSocketProvider, "testHostId", false);
         uhstHost.on("error", console.error);
         uhstHost.on("ready", () => {
             expect(uhstHost.hostId).to.equal("testHostId");
@@ -103,6 +103,6 @@ describe("# UhstHost", () => {
             done();
         });
 
-        expect(mockApi.initHost).to.have.been.calledWith("testHostId");
+        expect(mockRelay.initHost).to.have.been.calledWith("testHostId");
     });
 });

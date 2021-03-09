@@ -1,12 +1,12 @@
 // import { expect } from "chai";
 // import { stub } from "sinon";
-// import { UhstApiClient } from "../lib/contracts/UhstApiClient";
+// import { UhstRelayClient } from "../lib/contracts/UhstRelayClient";
 // import { ClientConfiguration, HostConfiguration, HostMessage } from "../lib/models";
 // import { WebRTCSocket } from "../lib/WebRTCSocket";
 
 // describe("# WebRTCSocket", () => {
 //     it("can connect as host", (done) => {
-//         const mockApi = <UhstApiClient>{};
+//         const mockRelay = <UhstRelayClient>{};
 //         const mockConfig: RTCConfiguration = <RTCConfiguration>{};
 //         const mockOffer: RTCSessionDescriptionInit = { type: "offer" };
 //         const mockAnswer: RTCSessionDescriptionInit = { type: "answer" };
@@ -51,7 +51,7 @@
 //             expect(config).to.equal(mockConfig);
 //             return connection;
 //         }
-//         mockApi.sendMessage = (responseToken, message, sendUrl): Promise<void> => {
+//         mockRelay.sendMessage = (responseToken, message, sendUrl): Promise<void> => {
 //             expect(responseToken).to.equal(mockToken);
 //             expect(sendUrl).to.equal("testSendUrl");
 //             if (message === mockAnswer) {
@@ -82,7 +82,7 @@
 //     });
 
 //     it("can connect as client", (done) => {
-//         const mockApi = <UhstApiClient>{};
+//         const mockRelay = <UhstRelayClient>{};
 //         const mockConfig: RTCConfiguration = <RTCConfiguration>{};
 //         const mockOffer: RTCSessionDescriptionInit = {};
 //         const mockAnswer: RTCSessionDescriptionInit = { type: "answer" };
@@ -136,12 +136,12 @@
 //             };
 //             return connection;
 //         }
-//         mockApi.initClient = stub().returns(<ClientConfiguration>{
+//         mockRelay.initClient = stub().returns(<ClientConfiguration>{
 //             clientToken: "testClientToken",
 //             receiveUrl: "testReceiveUrl",
 //             sendUrl: "testSendUrl",
 //         });
-//         mockApi.subscribeToMessages = (clientToken, handleMessage, receiveUrl) => {
+//         mockRelay.subscribeToMessages = (clientToken, handleMessage, receiveUrl) => {
 //             expect(clientToken).to.equal("testClientToken");
 //             expect(receiveUrl).to.equal("testReceiveUrl");
 //             messageHandler = handleMessage;
@@ -149,7 +149,7 @@
 //                 close: mockStreamClose
 //             }
 //         }
-//         mockApi.sendMessage = (clientToken, message, sendUrl): Promise<void> => {
+//         mockRelay.sendMessage = (clientToken, message, sendUrl): Promise<void> => {
 //             expect(clientToken).to.equal("testClientToken");
 //             expect(sendUrl).to.equal("testSendUrl");
 //             if (message === mockOffer) {
@@ -166,10 +166,10 @@
 //             return new Promise((resolve) => { resolve(); });
 //         }
 
-//         const uhstSocket: WebRTCSocket = new WebRTCSocket(mockApi, mockConfig, {type: "client", hostId: "testHost"}, false);
+//         const uhstSocket: WebRTCSocket = new WebRTCSocket(mockRelay, mockConfig, {type: "client", hostId: "testHost"}, false);
 //         expect(uhstSocket).to.not.be.null;
 //         uhstSocket.on('open', () => {
-//             expect(mockApi.initClient).to.have.been.calledWith("testHost");
+//             expect(mockRelay.initClient).to.have.been.calledWith("testHost");
 //             expect(mockStreamClose).to.have.been.calledOnce;
 //             done();
 //         });

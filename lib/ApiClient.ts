@@ -1,93 +1,56 @@
-import { UhstApiClient, MessageHandler, MessageStream } from "./contracts/UhstApiClient";
-import { ClientConfiguration, HostConfiguration, Message } from "./models";
-import { InvalidToken, InvalidHostId, HostIdAlreadyInUse, ApiError, ApiUnreachable, InvalidClientOrHostId } from "./UhstErrors";
+import {
+  MessageHandler,
+  MessageStream,
+  UhstRelayClient,
+} from './contracts/UhstRelayClient';
+import { HostConfiguration, ClientConfiguration, ApiResponse } from './models';
+import { NetworkClient } from './NetworkClient';
+import { RelayClient } from './RelayClient';
+import { RelayClientProvider } from './RelayClientProvider';
 
-const REQUEST_OPTIONS = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    }
-};
+const API_URL = 'https://api.uhst.io/v1/get-relay';
 
-export class ApiClient implements UhstApiClient {
-    constructor(private apiUrl: string) {
+export class ApiClient implements UhstRelayClient {
+  networkClient: NetworkClient;
+  relayClient: RelayClient;
+  constructor(
+    private relayClientProvider: RelayClientProvider,
+    networkClient?: NetworkClient
+  ) {
+    this.networkClient = networkClient ?? new NetworkClient();
+  }
 
-    }
+  async getRelayUrl(hostId?: string): Promise<string> {
+    const apiResponse: ApiResponse = await this.networkClient.post(
+      API_URL,
+      hostId ? [`hostId=${hostId}`] : undefined
+    );
+    return apiResponse.url;
+  }
 
-    async initHost(hostId: string): Promise<HostConfiguration> {
-        let response: Response;
-        try {
-            response = await fetch(`${this.apiUrl}?action=host&hostId=${hostId}`, REQUEST_OPTIONS);
-        } catch (error) {
-            console.log(error);
-            throw new ApiUnreachable(error);
-        }
-        if (response.status == 200) {
-            const jsonResponse = await response.json();
-            return jsonResponse;
-        } else if (response.status == 400) {
-            throw new HostIdAlreadyInUse(response.statusText);
-        } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
-        }
-    }
+  async initHost(hostId?: string): Promise<HostConfiguration> {
+    this.relayClient = this.relayClientProvider.createRelayClient(
+      await this.getRelayUrl(hostId)
+    );
+    return this.relayClient.initHost(hostId);
+  }
 
-    async initClient(hostId: string): Promise<ClientConfiguration> {
-        let response: Response;
-        try {
-            response = await fetch(`${this.apiUrl}?action=join&hostId=${hostId}`, REQUEST_OPTIONS);
-        } catch (error) {
-            console.log(error);
-            throw new ApiUnreachable(error);
-        }
-        if (response.status == 200) {
-            const jsonResponse = await response.json();
-            return jsonResponse;
-        } else if (response.status == 400) {
-            throw new InvalidHostId(response.statusText);
-        } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
-        }
-    }
+  async initClient(hostId: string): Promise<ClientConfiguration> {
+    this.relayClient = this.relayClientProvider.createRelayClient(
+      await this.getRelayUrl(hostId)
+    );
+    return this.relayClient.initClient(hostId);
+  }
 
-    async sendMessage(token: string, message: any, sendUrl?: string): Promise<void> {
-        const url = sendUrl ?? this.apiUrl;
-        let response: Response;
-        try {
-            response = await fetch(`${url}?token=${token}`, {
-                ...REQUEST_OPTIONS,
-                body: JSON.stringify(message),
-            });
-        } catch (error) {
-            console.log(error);
-            throw new ApiUnreachable(error);
-        }
-        if (response.status == 200) {
-            return;
-        } else if (response.status == 400) {
-            throw new InvalidClientOrHostId(response.statusText);
-        } else if (response.status == 401) {
-            throw new InvalidToken(response.statusText);
-        } else {
-            throw new ApiError(`${response.status} ${response.statusText}`);
-        }
-    }
+  sendMessage(token: string, message: any, sendUrl?: string): Promise<any> {
+    return this.relayClient.sendMessage(token, message, sendUrl);
+  }
 
-    subscribeToMessages(token: string, handler: MessageHandler, receiveUrl?: string): Promise<MessageStream> {
-        const url = receiveUrl ?? this.apiUrl;
-        return new Promise<MessageStream>((resolve, reject) => {
-            const stream = new EventSource(`${url}?token=${token}`);
-            stream.onopen = (ev: Event) => {
-                resolve(stream);
-            };
-            stream.onerror = (ev: Event) => {
-                reject(new ApiError(ev));
-            };
-            stream.addEventListener("message", (evt: MessageEvent) => {
-                const message: Message = JSON.parse(evt.data);
-                handler(message);
-            });
-        });
-    }
-
+  subscribeToMessages(
+    token: string,
+    handler: MessageHandler,
+    receiveUrl?: string
+  ): Promise<MessageStream> {
+    return this.relayClient.subscribeToMessages(token, handler, receiveUrl);
+  }
 }

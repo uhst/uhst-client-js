@@ -1,8 +1,13 @@
 <script src="../uhst.umd.js"></script>
 <script>
     function join() {
-        var test = new uhst.UHST({ socketProvider: new uhst.WebRTCSocketProvider(), apiUrl: "http://localhost:3000", debug: true });
-        var ws = test.join("testHost");
+        var test = new uhst.UHST({ debug: true });
+        var hostId = document.getElementById("hostId").value;
+        if (!hostId) {
+            alert('Host ID is required!');
+            return;
+        }
+        var ws = test.join(hostId);
         ws.on("error", function (error) {
             if (error instanceof uhst.InvalidHostId || error instanceof uhst.InvalidClientOrHostId) {
                 alert("Invalid hostId");
@@ -20,4 +25,5 @@
     }
 
 </script>
-<button onclick="join()">Click me</button>
+Host ID: <input id="hostId"/>
+<button onclick="join()">Join</button>
