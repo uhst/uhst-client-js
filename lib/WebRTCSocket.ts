@@ -54,14 +54,14 @@ export class WebRTCSocket implements UhstSocket {
         this._ee.off(eventName, handler);
     }
 
-    send(message: string): void;
-    send(message: Blob): void;
-    send(message: ArrayBuffer): void;
-    send(message: ArrayBufferView): void;
-
-    send(message: any) {
+    send(message: string): Promise<any>;
+    send(message: Blob): Promise<any>;
+    send(message: ArrayBuffer): Promise<any>;
+    send(message: ArrayBufferView): Promise<any>;
+    send(message: any): Promise<any> {
         if (this.debug) { this._ee.emit("diagnostic", "Sent message on data channel: " + message); }
         this.dataChannel.send(message);
+        return Promise.resolve();
     }
 
     close() {

@@ -15,10 +15,10 @@ export interface UhstSocket {
 
     off<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]);
 
-    send(message: string): void;
-    send(message: Blob): void;
-    send(message: ArrayBuffer): void;
-    send(message: ArrayBufferView): void;
+    send(message: string): Promise<any>;
+    send(message: Blob): Promise<any>;
+    send(message: ArrayBuffer): Promise<any>;
+    send(message: ArrayBufferView): Promise<any>;
 
     close();
 

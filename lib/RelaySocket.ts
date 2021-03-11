@@ -45,16 +45,16 @@ export class RelaySocket implements UhstSocket {
         this._ee.off(eventName, handler);
     }
     
-    send(message: string): void;
-    send(message: Blob): void;
-    send(message: ArrayBuffer): void;
-    send(message: ArrayBufferView): void;
-    send(message: any) {
+    send(message: string): Promise<any>;
+    send(message: Blob): Promise<any>;
+    send(message: ArrayBuffer): Promise<any>;
+    send(message: ArrayBufferView): Promise<any>;
+    async send(message: any): Promise<any> {
         const envelope = {
             "type": "string",
             "payload": message
         }
-        this.relayClient.sendMessage(this.token, envelope, this.sendUrl).catch((error) => {
+        await this.relayClient.sendMessage(this.token, envelope, this.sendUrl).catch((error) => {
             if (this.debug) { this._ee.emit("diagnostic", "Failed sending message: " + JSON.stringify(error)); }
             this._ee.emit("error", error);
         });
