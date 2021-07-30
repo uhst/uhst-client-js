@@ -3,43 +3,66 @@ import {
   MessageStream,
   UhstRelayClient,
 } from './contracts/UhstRelayClient';
-import { HostConfiguration, ClientConfiguration, ApiResponse } from './models';
-import { NetworkClient } from './NetworkClient';
+import { HostConfiguration, ClientConfiguration } from './models';
+import { RelayUrlsProvider } from './RelayUrlsProvider';
 import { RelayClient } from './RelayClient';
 import { RelayClientProvider } from './RelayClientProvider';
-
-const API_URL = 'https://api.uhst.io/v1/get-relay';
+import { InvalidHostId, RelayUnreachable } from './UhstErrors';
 
 export class ApiClient implements UhstRelayClient {
-  networkClient: NetworkClient;
+  relayUrlsProvider: RelayUrlsProvider;
   relayClient: RelayClient;
   constructor(
     private relayClientProvider: RelayClientProvider,
-    networkClient?: NetworkClient
+    relayUrlsProvider?: RelayUrlsProvider
   ) {
-    this.networkClient = networkClient ?? new NetworkClient();
-  }
-
-  async getRelayUrl(hostId?: string): Promise<string> {
-    const apiResponse: ApiResponse = await this.networkClient.post(
-      API_URL,
-      hostId ? [`hostId=${hostId}`] : undefined
-    );
-    return apiResponse.url;
+    this.relayUrlsProvider = relayUrlsProvider ?? new RelayUrlsProvider();
   }
 
   async initHost(hostId?: string): Promise<HostConfiguration> {
-    this.relayClient = this.relayClientProvider.createRelayClient(
-      await this.getRelayUrl(hostId)
-    );
-    return this.relayClient.initHost(hostId);
+    const relayUrl = await this.relayUrlsProvider.getBestRelayUrl(hostId);
+    let hostConfiguration: HostConfiguration;
+    let exception = new RelayUnreachable();
+    try {
+      this.relayClient = this.relayClientProvider.createRelayClient(relayUrl);
+      hostConfiguration = await this.relayClient.initHost(hostId);
+    } catch (e) {
+      // handle network error here
+      exception = e;
+    }
+    return new Promise<HostConfiguration>((resolve, reject) => {
+      if (hostConfiguration) {
+        resolve(hostConfiguration);
+      } else {
+        reject(exception);
+      }
+    });
   }
 
   async initClient(hostId: string): Promise<ClientConfiguration> {
-    this.relayClient = this.relayClientProvider.createRelayClient(
-      await this.getRelayUrl(hostId)
-    );
-    return this.relayClient.initClient(hostId);
+    const relayUrls = await this.relayUrlsProvider.getRelayUrls(hostId);
+    let clientConfiguration: ClientConfiguration;
+    let exception = new RelayUnreachable();
+    for (const url of relayUrls) {
+      try {
+        this.relayClient = this.relayClientProvider.createRelayClient(url);
+        clientConfiguration = await this.relayClient.initClient(hostId);
+        break;
+      } catch (e) {
+        // handle network error here
+        exception = e;
+        if (e instanceof InvalidHostId) {
+          break;
+        }
+      }
+    }
+    return new Promise<ClientConfiguration>((resolve, reject) => {
+      if (clientConfiguration) {
+        resolve(clientConfiguration);
+      } else {
+        reject(exception);
+      }
+    });
   }
 
   sendMessage(token: string, message: any, sendUrl?: string): Promise<any> {

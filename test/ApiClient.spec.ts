@@ -1,12 +1,12 @@
 import sinonChai from 'sinon-chai';
 import { expect, use } from 'chai';
 import { describe } from 'mocha';
-import { RelayClientProvider, UHST } from '../lib';
-import { UhstSocketProvider } from '../lib/contracts/UhstSocketProvider';
+import { stub } from 'sinon';
+import { InvalidHostId, RelayClientProvider, RelayUnreachable } from '../lib';
 import { ApiClient } from '../lib/ApiClient';
 import { RelayClient } from '../lib/RelayClient';
-import { ApiResponse, ClientConfiguration, HostConfiguration } from '../lib/models';
-import { stub } from 'sinon';
+import { ClientConfiguration, HostConfiguration } from '../lib/models';
+import { RelayUrlsProvider } from '../lib/RelayUrlsProvider';
 
 use(sinonChai);
 
@@ -15,80 +15,104 @@ describe('# ApiClient', () => {
     const mockRelayClientProvider = <RelayClientProvider>{};
     expect(new ApiClient(mockRelayClientProvider)).to.not.be.null;
   });
-  it('should initHost without hostId', async () => {
+  it('should initHost when working relay is available', async () => {
     const mockRelayClientProvider = <RelayClientProvider>{};
     const mockRelay = <RelayClient>{};
     const mockHostConfiguration = <HostConfiguration>{};
-    const mockApiResponse = <ApiResponse>{
-      url: 'testUrl',
-    };
-    const mockNetworkClient = {
-      post: stub().returns(mockApiResponse),
-    };
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
     mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    mockRelayUrlsProvider.getBestRelayUrl = stub().returns('testUrl');
     mockRelay.initHost = stub().returns(mockHostConfiguration);
     const hostConfiguration = await new ApiClient(
       mockRelayClientProvider,
-      mockNetworkClient
+      mockRelayUrlsProvider
     ).initHost();
     expect(hostConfiguration).to.equal(mockHostConfiguration);
-    expect(mockNetworkClient.post).to.have.been.calledWith(
-      'https://api.uhst.io/v1/get-relay'
-    );
     expect(mockRelayClientProvider.createRelayClient).to.have.been.calledWith(
       'testUrl'
     );
   });
-  it('should initHost with hostId', async () => {
+  it('should throw RelayUnreachable when initHost and no relay is available', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
+    mockRelayUrlsProvider.getBestRelayUrl = stub().throws(new RelayUnreachable());
+    let exception: any;
+    try {
+      await new ApiClient(
+        mockRelayClientProvider,
+        mockRelayUrlsProvider
+      ).initHost();
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).to.be.instanceOf(RelayUnreachable);
+  });
+  it('should rethrow InvalidHostId when initHost', async () => {
     const mockRelayClientProvider = <RelayClientProvider>{};
     const mockRelay = <RelayClient>{};
-    const mockHostConfiguration = <HostConfiguration>{};
-    const mockApiResponse = <ApiResponse>{
-      url: 'testUrlWithHostId',
-    };
-    const mockNetworkClient = {
-      post: stub().returns(mockApiResponse),
-    };
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
     mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
-    mockRelay.initHost = stub().returns(mockHostConfiguration);
-    const hostConfiguration = await new ApiClient(
-      mockRelayClientProvider,
-      mockNetworkClient
-    ).initHost('testHostId');
-    expect(hostConfiguration).to.equal(mockHostConfiguration);
-    expect(
-      mockNetworkClient.post
-    ).to.have.been.calledWith('https://api.uhst.io/v1/get-relay', [
-      'hostId=testHostId',
-    ]);
-    expect(mockRelayClientProvider.createRelayClient).to.have.been.calledWith(
-      'testUrlWithHostId'
-    );
+    mockRelayUrlsProvider.getBestRelayUrl = stub().returns('testUrl');
+    mockRelay.initHost = stub().throws(new InvalidHostId());
+    let exception: any;
+    try {
+      await new ApiClient(
+        mockRelayClientProvider,
+        mockRelayUrlsProvider
+      ).initHost();
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).to.be.instanceOf(InvalidHostId);
   });
-  it('should initClient with hostId', async () => {
+  it('should initClient when working relay is available', async () => {
     const mockRelayClientProvider = <RelayClientProvider>{};
     const mockRelay = <RelayClient>{};
     const mockClientConfiguration = <ClientConfiguration>{};
-    const mockApiResponse = <ApiResponse>{
-      url: 'testUrlWithHostId',
-    };
-    const mockNetworkClient = {
-      post: stub().returns(mockApiResponse),
-    };
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
     mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    mockRelayUrlsProvider.getRelayUrls = stub().returns(['testUrl']);
     mockRelay.initClient = stub().returns(mockClientConfiguration);
     const clientConfiguration = await new ApiClient(
       mockRelayClientProvider,
-      mockNetworkClient
+      mockRelayUrlsProvider
     ).initClient('testHostId');
     expect(clientConfiguration).to.equal(mockClientConfiguration);
-    expect(
-      mockNetworkClient.post
-    ).to.have.been.calledWith('https://api.uhst.io/v1/get-relay', [
-      'hostId=testHostId',
-    ]);
     expect(mockRelayClientProvider.createRelayClient).to.have.been.calledWith(
-      'testUrlWithHostId'
+      'testUrl'
     );
+  });
+  it('should throw RelayUnreachable when initClient and no relay is available', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
+    mockRelayUrlsProvider.getRelayUrls = stub().returns([]);
+    let exception: any;
+    try {
+      await new ApiClient(
+        mockRelayClientProvider,
+        mockRelayUrlsProvider
+      ).initClient('testHostId');
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).to.be.instanceOf(RelayUnreachable);
+  });
+  it('should rethrow InvalidHostId when initClient', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelay = <RelayClient>{};
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
+    mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    mockRelayUrlsProvider.getRelayUrls = stub().returns(['testUrl']);
+    mockRelay.initClient = stub().throws(new InvalidHostId());
+    let exception: any;
+    try {
+      await new ApiClient(
+        mockRelayClientProvider,
+        mockRelayUrlsProvider
+      ).initClient('testHostId');
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).to.be.instanceOf(InvalidHostId);
   });
 });
