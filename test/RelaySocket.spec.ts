@@ -51,6 +51,7 @@ describe("# RelaySocket", () => {
         const mockHostSocketParams: HostSocketParams = {
             type: "host",
             token: mockToken,
+            clientId: "testClient",
             sendUrl: "hostSendUrl"
         };
   
@@ -70,6 +71,7 @@ describe("# RelaySocket", () => {
         const mockHostSocketParams: HostSocketParams = {
             type: "host",
             token: mockToken,
+            clientId: "testClient",
             sendUrl: "hostSendUrl"
         };
 
@@ -101,6 +103,7 @@ describe("# RelaySocket", () => {
         const mockHostSocketParams: HostSocketParams = {
             type: "host",
             token: mockToken,
+            clientId: "testClient",
             sendUrl: "hostSendUrl"
         };
   

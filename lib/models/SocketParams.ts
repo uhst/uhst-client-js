@@ -1,6 +1,7 @@
 export interface HostSocketParams {
     type: "host",
     token: string,
+    clientId: string,
     sendUrl?: string
 }
 

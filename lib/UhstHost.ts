@@ -64,7 +64,7 @@ export class UhstHost {
         const clientId: string = (JwtDecode(message.responseToken) as any).clientId;
         let hostSocket = this.clients.get(clientId);
         if (!hostSocket) {
-            const socket = this.socketProvider.createUhstSocket(this.relayClient, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl}, this.debug);
+            const socket = this.socketProvider.createUhstSocket(this.relayClient, {type: "host", token: message.responseToken, sendUrl: this.config.sendUrl, clientId}, this.debug);
             if (this.debug) { this._ee.emit("diagnostic", "Host received client connection from clientId: "+clientId); }
             this._ee.emit("connection", socket);
             this.clients.set(clientId, socket);

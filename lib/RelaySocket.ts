@@ -6,6 +6,7 @@ import { ClientSocketParams, HostSocketParams, Message } from "./models";
 export class RelaySocket implements UhstSocket {
     private _ee = new EventEmitter<SocketEventSet>();
     private token: string;
+    private _remoteId: string;
     private relayMessageStream: MessageStream;
     private sendUrl?: string;
 
@@ -18,11 +19,13 @@ export class RelaySocket implements UhstSocket {
             case "client":
                 // will connect to host
                 this.initClient(params.hostId);
+                this._remoteId = params.hostId;
                 break;
             case "host":
                 // client connected
                 this.token = params.token;
                 this.sendUrl = params.sendUrl;
+                this._remoteId = params.clientId;
                 // give consumer a chance to subscribe to open event
                 setTimeout(() => {
                     this._ee.emit("open");
@@ -31,6 +34,9 @@ export class RelaySocket implements UhstSocket {
             default:
                 throw Error("Unsupported Socket Parameters Type");
         }
+    }
+    get remoteId(): string {
+        return this._remoteId;
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {

@@ -24,6 +24,7 @@ describe("# RelaySocketProvider", () => {
         const provider = new RelaySocketProvider();
         const mockHostSocketParams: HostSocketParams = {
             type: "host",
+            clientId: "testClient",
             token: "responseToken"
         };
         expect(provider.createUhstSocket(<UhstRelayClient>{}, mockHostSocketParams, false)).to.not.be.null;

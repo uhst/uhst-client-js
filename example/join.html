@@ -17,6 +17,7 @@
         });
         ws.on("diagnostic", console.log);
         ws.on("open", function open() {
+            console.log("Connected to host: %s", ws.remoteId);
             ws.send("hello");
         });
         ws.on("message", function incoming(message) {
