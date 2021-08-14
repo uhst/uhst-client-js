@@ -7,6 +7,7 @@ export class WebRTCSocket implements UhstSocket {
     private _ee = new EventEmitter<SocketEventSet>();
     private _pendingCandidates: (RTCIceCandidate | RTCIceCandidateInit)[] = [];
     private _offerAccepted = false;
+    private _remoteId;
     private token: string;
     private connection: RTCPeerConnection;
     private dataChannel: RTCDataChannel;
@@ -31,15 +32,20 @@ export class WebRTCSocket implements UhstSocket {
             case "client":
                 // will connect to host
                 this.initClient(params.hostId);
+                this._remoteId = params.hostId;
                 break;
             case "host":
                 // will connect to client
                 this.token = params.token;
                 this.sendUrl = params.sendUrl;
+                this._remoteId = params.clientId;
                 break;
             default:
                 throw Error("Unsupported Socket Parameters Type");
         }
+    }
+    get remoteId(): string {
+        return this._remoteId;
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {

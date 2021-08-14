@@ -9,6 +9,8 @@ export type SocketEventSet = {
 }
 
 export interface UhstSocket {
+    readonly remoteId: string; 
+
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]);
 
     once<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]);
@@ -23,4 +25,5 @@ export interface UhstSocket {
     close();
 
     handleMessage(message: Message);
+
 }

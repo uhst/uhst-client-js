@@ -11,10 +11,11 @@
     host.on("connection", function connection(ws) {
         ws.on("diagnostic", console.log);
         ws.on("message", function incoming(message) {
-            console.log("Host received: %s", message);
+            console.log("Host received: %s from %s", message, ws.remoteId);
             host.broadcast("Host received: "+ message);
         });
         ws.on("open", function ready() {
+            console.log("Client %s connected", ws.remoteId);
             ws.send("something");
         });
     });
