@@ -5,3 +5,4 @@ export * from './HostMessage';
 export * from './Message';
 export * from './SocketParams';
 export * from './RelayMessage';
+export * from './RelayEvent';

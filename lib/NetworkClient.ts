@@ -4,27 +4,45 @@ const REQUEST_OPTIONS = {
   method: 'POST',
 };
 
+const getRequestOptions = (body: any): any => {
+  if (body) {
+    return {
+      ...REQUEST_OPTIONS,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    };
+  } else {
+    return REQUEST_OPTIONS;
+  }
+};
+
 export class NetworkClient {
   async post(
     url: string,
     queryParams?: string[],
+    body?: any,
     timeout?: number
   ): Promise<any> {
+    if (queryParams && queryParams.length > 0) {
+      url = `${url}?${queryParams.join('&')}`;
+    }
+    let response: Response;
     try {
-      if (queryParams && queryParams.length > 0) {
-        url = `${url}?${queryParams.join('&')}`;
-      }
-      const response = timeout
-        ? await this.fetchWithTimeout(url, { ...REQUEST_OPTIONS, timeout })
-        : await fetch(url, REQUEST_OPTIONS);
-      if (response.status == 200) {
-        return response.json();
-      } else {
-        throw new NetworkError(response.status, `${response.statusText}`);
-      }
+      response = timeout
+        ? await this.fetchWithTimeout(url, {
+            ...getRequestOptions(body),
+            timeout,
+          })
+        : await fetch(url, getRequestOptions(body));
     } catch (error) {
-      console.log(error);
       throw new NetworkUnreachable(error);
+    }
+    if (response.status == 200) {
+      return response.json();
+    } else {
+      throw new NetworkError(response.status, `${response.statusText}`);
     }
   }
 
@@ -33,21 +51,21 @@ export class NetworkClient {
     queryParams?: string[],
     timeout?: number
   ): Promise<any> {
+    if (queryParams && queryParams.length > 0) {
+      url = `${url}?${queryParams.join('&')}`;
+    }
+    let response: Response;
     try {
-      if (queryParams && queryParams.length > 0) {
-        url = `${url}?${queryParams.join('&')}`;
-      }
-      const response = timeout
+      response = timeout
         ? await this.fetchWithTimeout(url, { timeout })
         : await fetch(url);
-      if (response.status == 200) {
-        return response.json();
-      } else {
-        throw new NetworkError(response.status, `${response.statusText}`);
-      }
     } catch (error) {
-      console.log(error);
       throw new NetworkUnreachable(error);
+    }
+    if (response.status == 200) {
+      return response.json();
+    } else {
+      throw new NetworkError(response.status, `${response.statusText}`);
     }
   }
 

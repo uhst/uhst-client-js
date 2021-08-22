@@ -6,18 +6,27 @@
         document.getElementById("hostId").value = host.hostId;
         alert("Host ready!");
     });
-    host.on("error", console.error);
+    host.on("error", function (error) {
+        if (error instanceof uhst.RelayError) {
+            alert("Disconnected.");
+        } else {
+            console.error(error);
+        }
+    });
     host.on("diagnostic", console.log);
     host.on("connection", function connection(ws) {
         ws.on("diagnostic", console.log);
         ws.on("message", function incoming(message) {
             console.log("Host received: %s from %s", message, ws.remoteId);
-            host.broadcast("Host received: "+ message);
+            host.broadcast("Host received: " + message);
         });
         ws.on("open", function ready() {
             console.log("Client %s connected", ws.remoteId);
             ws.send("something");
         });
+        ws.on("close", function disconnected() {
+            console.log("Client %s disconnected.", ws.remoteId);
+        });
     });
 </script>
-Host ID: <input id="hostId" disabled/>
+Host ID: <input id="hostId" disabled />
