@@ -1,6 +1,7 @@
 import {
   MessageHandler,
   MessageStream,
+  RelayEventHandler,
   UhstRelayClient,
 } from './contracts/UhstRelayClient';
 import { HostConfiguration, ClientConfiguration } from './models';
@@ -71,9 +72,17 @@ export class ApiClient implements UhstRelayClient {
 
   subscribeToMessages(
     token: string,
-    handler: MessageHandler,
+    messageHandler: MessageHandler,
+    relayErrorHandler: Function,
+    relayEventHandler: RelayEventHandler,
     receiveUrl?: string
   ): Promise<MessageStream> {
-    return this.relayClient.subscribeToMessages(token, handler, receiveUrl);
+    return this.relayClient.subscribeToMessages(
+      token,
+      messageHandler,
+      relayErrorHandler,
+      relayEventHandler,
+      receiveUrl
+    );
   }
 }

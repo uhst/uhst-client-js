@@ -178,7 +178,7 @@ export class WebRTCSocket implements UhstSocket {
             if (this.debug) { this._ee.emit("diagnostic", "Client configuration received from server."); }
             this.token = config.clientToken;
             this.sendUrl = config.sendUrl;
-            this.relayMessageStream = await this.relayClient.subscribeToMessages(config.clientToken, this.handleMessage, config.receiveUrl);
+            this.relayMessageStream = await this.relayClient.subscribeToMessages(config.clientToken, this.handleMessage, undefined, undefined, config.receiveUrl);
             if (this.debug) { this._ee.emit("diagnostic", "Client subscribed to messages from server."); }
             const offer = await this.connection.createOffer();
             this.relayClient.sendMessage(this.token, offer, this.sendUrl).then(() => {

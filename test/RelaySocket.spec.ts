@@ -23,7 +23,7 @@ describe("# RelaySocket", () => {
             receiveUrl: "testReceiveUrl",
             sendUrl: "testSendUrl",
         });
-        mockRelay.subscribeToMessages = (clientToken, handleMessage, receiveUrl) => {
+        mockRelay.subscribeToMessages = (clientToken, handleMessage, handleRelayError, handleRelayEvent, receiveUrl) => {
             expect(clientToken).to.equal("testClientToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handleMessage;

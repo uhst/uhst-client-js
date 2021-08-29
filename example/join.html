@@ -23,8 +23,11 @@
         ws.on("message", function incoming(message) {
             console.log("Client received: %s", message);
         });
+        ws.on("close", function close() {
+            console.log("Connection to host %s dropped.", ws.remoteId);
+        });
     }
 
 </script>
-Host ID: <input id="hostId"/>
+Host ID: <input id="hostId" />
 <button onclick="join()">Join</button>

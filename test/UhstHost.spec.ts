@@ -25,7 +25,7 @@ describe("# UhstHost", () => {
             sendUrl: "testSendUrl",
         });
 
-        mockRelay.subscribeToMessages = (token, handler, receiveUrl) => {
+        mockRelay.subscribeToMessages = (token, handler, handleRelayError, handleRelayEvent, receiveUrl) => {
             expect(token).to.equal("testHostToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handler;
@@ -78,7 +78,7 @@ describe("# UhstHost", () => {
             sendUrl: "testSendUrl",
         });
 
-        mockRelay.subscribeToMessages = (token, handler, receiveUrl) => {
+        mockRelay.subscribeToMessages = (token, handler, handleRelayError, handleRelayEvent, receiveUrl) => {
             expect(token).to.equal("testHostToken");
             expect(receiveUrl).to.equal("testReceiveUrl");
             messageHandler = handler;

@@ -2,8 +2,9 @@ import {
   UhstRelayClient,
   MessageHandler,
   MessageStream,
+  RelayEventHandler,
 } from './contracts/UhstRelayClient';
-import { ClientConfiguration, HostConfiguration, Message } from './models';
+import { ClientConfiguration, HostConfiguration, Message, RelayEvent } from './models';
 import {
   InvalidToken,
   InvalidHostId,
@@ -15,13 +16,6 @@ import {
 } from './UhstErrors';
 import { NetworkClient } from './NetworkClient';
 
-const REQUEST_OPTIONS = {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-};
-
 export class RelayClient implements UhstRelayClient {
   networkClient: NetworkClient;
   constructor(private relayUrl: string, networkClient?: NetworkClient) {
@@ -30,10 +24,11 @@ export class RelayClient implements UhstRelayClient {
 
   async initHost(hostId?: string): Promise<HostConfiguration> {
     try {
-      return this.networkClient.post(
+      const hostConfig = await this.networkClient.post(
         this.relayUrl,
         hostId ? ['action=host', `hostId=${hostId}`] : ['action=host']
       );
+      return hostConfig;
     } catch (error) {
       if (error instanceof NetworkError) {
         if (error.responseCode == 400) {
@@ -42,7 +37,6 @@ export class RelayClient implements UhstRelayClient {
           throw new RelayError(error.message);
         }
       } else {
-        console.log(error);
         throw new RelayUnreachable(error);
       }
     }
@@ -50,10 +44,11 @@ export class RelayClient implements UhstRelayClient {
 
   async initClient(hostId: string): Promise<ClientConfiguration> {
     try {
-      return this.networkClient.post(this.relayUrl, [
+      const clientConfig = await this.networkClient.post(this.relayUrl, [
         'action=join',
         `hostId=${hostId}`,
       ]);
+      return clientConfig;
     } catch (error) {
       if (error instanceof NetworkError) {
         if (error.responseCode == 400) {
@@ -62,7 +57,6 @@ export class RelayClient implements UhstRelayClient {
           throw new RelayError(error.message);
         }
       } else {
-        console.log(error);
         throw new RelayUnreachable(error);
       }
     }
@@ -72,47 +66,66 @@ export class RelayClient implements UhstRelayClient {
     token: string,
     message: any,
     sendUrl?: string
-  ): Promise<void> {
+  ): Promise<any> {
     const url = sendUrl ?? this.relayUrl;
-    let response: Response;
     try {
-      response = await fetch(`${url}?token=${token}`, {
-        ...REQUEST_OPTIONS,
-        body: JSON.stringify(message),
-      });
+      const response = await this.networkClient.post(
+        url,
+        [`token=${token}`],
+        message
+      );
+      return response;
     } catch (error) {
-      console.log(error);
-      throw new RelayUnreachable(error);
-    }
-    if (response.status == 200) {
-      return;
-    } else if (response.status == 400) {
-      throw new InvalidClientOrHostId(response.statusText);
-    } else if (response.status == 401) {
-      throw new InvalidToken(response.statusText);
-    } else {
-      throw new RelayError(`${response.status} ${response.statusText}`);
+      if (error instanceof NetworkError) {
+        if (error.responseCode == 400) {
+          throw new InvalidClientOrHostId(error.message);
+        } else if (error.responseCode == 401) {
+          throw new InvalidToken(error.message);
+        } else {
+          throw new RelayError(`${error.responseCode} ${error.message}`);
+        }
+      } else {
+        throw new RelayUnreachable(error);
+      }
     }
   }
 
   subscribeToMessages(
     token: string,
-    handler: MessageHandler,
+    messageHandler: MessageHandler,
+    relayErrorHandler: Function,
+    relayEventHandler?: RelayEventHandler,
     receiveUrl?: string
   ): Promise<MessageStream> {
     const url = receiveUrl ?? this.relayUrl;
     return new Promise<MessageStream>((resolve, reject) => {
+      let resolved = false;
       const stream = new EventSource(`${url}?token=${token}`);
-      stream.onopen = (ev: Event) => {
-        resolve(stream);
+      stream.onopen = () => {
+        if (!resolved) {
+          resolve(stream);
+          resolved = true;
+        }
       };
-      stream.onerror = (ev: Event) => {
-        reject(new RelayError(ev));
+      stream.onerror = () => {
+        if (!resolved) {
+          // error on connect
+          reject(new RelayError());
+          resolved = true;
+        } else if (relayErrorHandler) {
+          relayErrorHandler(new RelayError());
+        }
       };
       stream.addEventListener('message', (evt: MessageEvent) => {
         const message: Message = JSON.parse(evt.data);
-        handler(message);
+        messageHandler(message);
       });
+      if (relayEventHandler) {
+        stream.addEventListener('relay_event', (evt: MessageEvent) => {
+          const relayEvent: RelayEvent = JSON.parse(evt.data);
+          relayEventHandler(relayEvent);
+        });
+      }
     });
   }
 }
