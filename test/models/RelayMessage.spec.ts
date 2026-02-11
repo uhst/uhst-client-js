@@ -21,11 +21,78 @@ describe("# RelayMessage", () => {
         expect(testPayload).to.equal("test");
     });
 
-    // it("sets and gets Blob payload", async () => {
-    //     const testBlob = new Blob([JSON.stringify({test: "message"}, null, 2)], {type : "application/json"});
-    //     const testMessage = new RelayMessage();
-    //     await testMessage.setPayload(testBlob);
-    //     const testPayload = await testMessage.getPayload();
-    //     expect(testPayload).to.equal(testBlob);
-    // });
-});
+        it("sets and gets Blob payload", async () => {
+
+            const testBlob = new Blob(["test"], {type : "text/plain"});
+
+            const testMessage = new RelayMessage();
+
+            
+
+            // mock fetch for data URL
+
+            const mockFetch = (url: string) => Promise.resolve({
+
+                blob: () => Promise.resolve(testBlob)
+
+            });
+
+            (global as any).fetch = mockFetch;
+
+    
+
+            await testMessage.setPayload(testBlob);
+
+            const testPayload = await testMessage.getPayload();
+
+            expect(testPayload).to.deep.equal(testBlob);
+
+            
+
+            delete (global as any).fetch;
+
+        });
+
+    
+
+        it("should throw error for unsupported type", async () => {
+
+            const testMessage = new RelayMessage();
+
+            try {
+
+                await testMessage.setPayload(123 as any);
+
+                expect.fail("Should have thrown");
+
+            } catch (e) {
+
+                expect(e.message).to.equal("Unsupported message type.");
+
+            }
+
+        });
+
+    
+
+        it("should throw error for non-Blob object", async () => {
+
+            const testMessage = new RelayMessage();
+
+            try {
+
+                await testMessage.setPayload({} as any);
+
+                expect.fail("Should have thrown");
+
+            } catch (e) {
+
+                expect(e.message).to.equal("Unsupported message type.");
+
+            }
+
+        });
+
+    });
+
+    

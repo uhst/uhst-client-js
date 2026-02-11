@@ -115,4 +115,38 @@ describe('# ApiClient', () => {
     }
     expect(exception).to.be.instanceOf(InvalidHostId);
   });
+  it('should stop initClient if InvalidHostId is thrown', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelay = <RelayClient>{};
+    const mockRelayUrlsProvider = <RelayUrlsProvider>{};
+    mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    mockRelayUrlsProvider.getRelayUrls = stub().returns(['url1', 'url2']);
+    mockRelay.initClient = stub().throws(new InvalidHostId());
+    await new ApiClient(
+      mockRelayClientProvider,
+      mockRelayUrlsProvider
+    ).initClient('testHostId').catch(() => {});
+    expect(mockRelayClientProvider.createRelayClient).to.have.been.calledOnce;
+  });
+  it('should sendMessage', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelay = <RelayClient>{};
+    mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    mockRelay.sendMessage = stub().resolves({ success: true });
+    const apiClient = new ApiClient(mockRelayClientProvider);
+    apiClient.relayClient = mockRelay;
+    const result = await apiClient.sendMessage('token', 'msg');
+    expect(result).to.deep.equal({ success: true });
+  });
+  it('should subscribeToMessages', async () => {
+    const mockRelayClientProvider = <RelayClientProvider>{};
+    const mockRelay = <RelayClient>{};
+    mockRelayClientProvider.createRelayClient = stub().returns(mockRelay);
+    const mockStream = <any>{};
+    mockRelay.subscribeToMessages = stub().resolves(mockStream);
+    const apiClient = new ApiClient(mockRelayClientProvider);
+    apiClient.relayClient = mockRelay;
+    const result = await apiClient.subscribeToMessages('token', stub(), stub(), stub());
+    expect(result).to.equal(mockStream);
+  });
 });
