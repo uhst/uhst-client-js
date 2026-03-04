@@ -8,11 +8,11 @@
   "scripts": {
     "build": "tsc -p tsconfig-esm.json && rollup -c rollup.config.mjs dist/index.js",
     "clean": "rm -rf dist",
-    "test": "npm run clean && NODE_OPTIONS='--no-experimental-strip-types' mocha --require ts-node/register 'test/**/*.spec.ts'",
-    "test:coverage": "nyc npm run test && rm -rf ./coverage",
-    "test:watch": "NODE_OPTIONS='--no-experimental-strip-types' mocha -w --require ts-node/register 'test/**/*.spec.ts'",
+    "test": "pnpm run clean && mocha --require tsx 'test/**/*.spec.ts'",
+    "test:coverage": "nyc pnpm run test && rm -rf ./coverage",
+    "test:watch": "mocha -w --require tsx 'test/**/*.spec.ts'",
     "lint": "eslint 'lib/**/*.ts' 'test/**/*.ts'",
-    "dist": "npm test && npm run build && copyfiles package.json README.md ./example/*.html dist && typedoc",
+    "dist": "pnpm test && pnpm run build && copyfiles package.json README.md ./example/*.html dist && typedoc",
     "semantic-release": "semantic-release",
     "server": "uhst"
   },
@@ -39,6 +39,7 @@
     "@types/chai": "^4.3.0",
     "@types/jsdom": "^21.1.0",
     "@types/mocha": "^10.0.0",
+    "@types/node": "^25.3.3",
     "@types/sinon": "^17.0.0",
     "@types/sinon-chai": "^3.2.12",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
@@ -53,7 +54,7 @@
     "semantic-release": "^24.2.0",
     "sinon": "^17.0.0",
     "sinon-chai": "^3.7.0",
-    "ts-node": "^10.9.0",
+    "tsx": "^4.0.0",
     "typedoc": "^0.27.0",
     "typescript": "~5.7.0",
     "uhst-server": "^2.1.1"
