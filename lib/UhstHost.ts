@@ -1,4 +1,4 @@
-import JwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { EventEmitter } from 'inf-ee';
 import { MessageStream, UhstRelayClient } from './contracts/UhstRelayClient';
 import {
@@ -94,7 +94,7 @@ export class UhstHost {
   }
 
   private handleMessage = (message: HostMessage) => {
-    const clientId: string = (JwtDecode(message.responseToken) as any).clientId;
+    const clientId: string = (jwtDecode(message.responseToken) as any).clientId;
     let hostSocket = this.clients.get(clientId);
     if (!hostSocket) {
       const socket = this.socketProvider.createUhstSocket(

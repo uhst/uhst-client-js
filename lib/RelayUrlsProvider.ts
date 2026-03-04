@@ -42,7 +42,7 @@ export class RelayUrlsProvider {
           .slice(0, Math.min(relayUrls.length, 10))
           .forEach(async (url) => {
             try {
-              const response = await this.networkClient.post(url, [
+              await this.networkClient.post(url, [
                 'action=ping',
                 `timestamp=${Date.now()}`,
               ]);

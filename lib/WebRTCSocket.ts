@@ -116,7 +116,7 @@ export class WebRTCSocket implements UhstSocket {
         };
     }
 
-    private handleConnectionStateChange(ev: Event) {
+    private handleConnectionStateChange(_ev: Event) {
         switch (this.connection.connectionState) {
             case "connected":
                 // The connection has become fully connected

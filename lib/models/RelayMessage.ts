@@ -34,10 +34,11 @@ export class RelayMessage {
         switch(this.payloadType) {
             case PayloadType.STRING:
                 return this.payload;
-            case PayloadType.BLOB:
+            case PayloadType.BLOB: {
                 console.log(this.payload);
                 const result = await fetch(this.payload).then(res => res.blob());
                 return result;
+            }
         }
 
     }
@@ -50,5 +51,5 @@ export class RelayMessage {
             resolve(reader.result as string);
           };
         });
-      };
+      }
 }
