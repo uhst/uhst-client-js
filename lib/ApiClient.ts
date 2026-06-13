@@ -6,18 +6,39 @@ import {
 } from './contracts/UhstRelayClient';
 import { HostConfiguration, ClientConfiguration } from './models';
 import { RelayUrlsProvider } from './RelayUrlsProvider';
+import { ApiRelayUrlsProvider } from './ApiRelayUrlsProvider';
+import { RelayUrlsResolver } from './contracts/RelayUrlsResolver';
 import { RelayClient } from './RelayClient';
 import { RelayClientProvider } from './RelayClientProvider';
 import { InvalidHostId, RelayUnreachable } from './UhstErrors';
 
+export interface ApiClientOptions {
+  /** API key (`uhst_dev_...`) for the hosted UHST API. */
+  apiKey?: string;
+  /** Override the API base URL (defaults to https://api.uhst.io). */
+  apiUrl?: string;
+}
+
 export class ApiClient implements UhstRelayClient {
-  relayUrlsProvider: RelayUrlsProvider;
+  relayUrlsProvider: RelayUrlsResolver;
   relayClient: RelayClient;
   constructor(
     private relayClientProvider: RelayClientProvider,
-    relayUrlsProvider?: RelayUrlsProvider
+    relayUrlsProvider?: RelayUrlsResolver,
+    options?: ApiClientOptions
   ) {
-    this.relayUrlsProvider = relayUrlsProvider ?? new RelayUrlsProvider();
+    if (relayUrlsProvider) {
+      this.relayUrlsProvider = relayUrlsProvider;
+    } else if (options?.apiKey) {
+      // Discover relays through the hosted UHST API.
+      this.relayUrlsProvider = new ApiRelayUrlsProvider(
+        options.apiKey,
+        options.apiUrl
+      );
+    } else {
+      // Fall back to the public relays directory.
+      this.relayUrlsProvider = new RelayUrlsProvider();
+    }
   }
 
   async initHost(hostId?: string): Promise<HostConfiguration> {

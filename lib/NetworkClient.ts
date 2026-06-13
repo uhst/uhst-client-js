@@ -49,16 +49,24 @@ export class NetworkClient {
   async get(
     url: string,
     queryParams?: string[],
-    timeout?: number
+    timeout?: number,
+    headers?: Record<string, string>
   ): Promise<any> {
     if (queryParams && queryParams.length > 0) {
       url = `${url}?${queryParams.join('&')}`;
     }
     let response: Response;
     try {
-      response = timeout
-        ? await this.fetchWithTimeout(url, { timeout })
-        : await fetch(url);
+      if (timeout) {
+        response = await this.fetchWithTimeout(url, {
+          timeout,
+          ...(headers ? { headers } : {}),
+        });
+      } else if (headers) {
+        response = await fetch(url, { headers });
+      } else {
+        response = await fetch(url);
+      }
     } catch (error) {
       throw new NetworkUnreachable(error);
     }

@@ -7,6 +7,7 @@ import { ApiClient } from '../lib/ApiClient';
 import { RelayClient } from '../lib/RelayClient';
 import { ClientConfiguration, HostConfiguration } from '../lib/models';
 import { RelayUrlsProvider } from '../lib/RelayUrlsProvider';
+import { ApiRelayUrlsProvider } from '../lib/ApiRelayUrlsProvider';
 
 use(sinonChai);
 
@@ -14,6 +15,16 @@ describe('# ApiClient', () => {
   it('should create ApiClient', () => {
     const mockRelayClientProvider = <RelayClientProvider>{};
     expect(new ApiClient(mockRelayClientProvider)).to.not.be.null;
+  });
+  it('should use the public relays directory by default', () => {
+    const apiClient = new ApiClient(<RelayClientProvider>{});
+    expect(apiClient.relayUrlsProvider).to.be.instanceOf(RelayUrlsProvider);
+  });
+  it('should use the hosted API when an apiKey is provided', () => {
+    const apiClient = new ApiClient(<RelayClientProvider>{}, undefined, {
+      apiKey: 'uhst_dev_x',
+    });
+    expect(apiClient.relayUrlsProvider).to.be.instanceOf(ApiRelayUrlsProvider);
   });
   it('should initHost when working relay is available', async () => {
     const mockRelayClientProvider = <RelayClientProvider>{};

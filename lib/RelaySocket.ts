@@ -1,7 +1,7 @@
 import { EventEmitter } from 'inf-ee';
 import { MessageStream, UhstRelayClient } from './contracts/UhstRelayClient';
 import { SocketEventSet, UhstSocket } from './contracts/UhstSocket';
-import { ClientSocketParams, HostSocketParams, Message, RelayEvent, RelayEventType } from './models';
+import { ClientSocketParams, HostSocketParams, Message, RelayEvent, RelayEventType, SocketTransport } from './models';
 
 export class RelaySocket implements UhstSocket {
   private _ee = new EventEmitter<SocketEventSet>();
@@ -41,6 +41,10 @@ export class RelaySocket implements UhstSocket {
   }
   get remoteId(): string {
     return this._remoteId;
+  }
+
+  get transport(): SocketTransport {
+    return 'relay';
   }
 
   on<EventName extends keyof SocketEventSet>(

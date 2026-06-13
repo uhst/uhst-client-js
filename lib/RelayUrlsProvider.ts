@@ -1,11 +1,12 @@
 import { Relay } from './models';
 import { NetworkClient } from './NetworkClient';
+import { RelayUrlsResolver } from './contracts/RelayUrlsResolver';
 import { RelayUnreachable } from './UhstErrors';
 
 const RELAYS_LIST_URL =
   'https://raw.githubusercontent.com/uhst/relays/main/list.json';
 
-export class RelayUrlsProvider {
+export class RelayUrlsProvider implements RelayUrlsResolver {
   networkClient: NetworkClient;
   constructor(networkClient?: NetworkClient) {
     this.networkClient = networkClient ?? new NetworkClient();

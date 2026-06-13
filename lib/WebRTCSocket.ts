@@ -1,7 +1,7 @@
 import { EventEmitter } from "inf-ee";
 import { UhstRelayClient, MessageStream } from "./contracts/UhstRelayClient";
 import { SocketEventSet, UhstSocket } from "./contracts/UhstSocket";
-import { Message, HostSocketParams, ClientSocketParams } from "./models";
+import { Message, HostSocketParams, ClientSocketParams, SocketTransport } from "./models";
 
 export class WebRTCSocket implements UhstSocket {
     private _ee = new EventEmitter<SocketEventSet>();
@@ -46,6 +46,10 @@ export class WebRTCSocket implements UhstSocket {
     }
     get remoteId(): string {
         return this._remoteId;
+    }
+
+    get transport(): SocketTransport {
+        return 'webrtc';
     }
 
     on<EventName extends keyof SocketEventSet>(eventName: EventName, handler: SocketEventSet[EventName]) {

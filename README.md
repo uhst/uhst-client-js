@@ -85,6 +85,52 @@ The UHST client interface is similar to the HTML5 WebSocket interface but instea
 Once a client and a host have connected they can exchange messages asynchronously. Arbitrary number of clients can connect to the same host but clients cannot
 send messages to each other, they can only communicate with the host.
 
+### Automatic WebRTC upgrade
+
+Every connection starts out going through the relay server. The host then
+**automatically** tries to upgrade each client to a direct peer-to-peer WebRTC
+data channel. If WebRTC can be established the messages flow directly between
+the peers; if it cannot (or if it later drops) the connection transparently
+falls back to the relay, so messaging never breaks. Different clients of the
+same host can independently end up on WebRTC or the relay — no configuration is
+required.
+
+You can tell which transport a socket is currently using through the
+`transport` property (`"relay"` or `"webrtc"`) and the `transportchange` event:
+
+```JavaScript
+client.on("open", function open() {
+    console.log("Connected via", client.transport); // "relay" initially
+});
+client.on("transportchange", function (transport) {
+    console.log("Now connected via", transport); // "webrtc" once upgraded
+});
+```
+
+WebRTC upgrading is on by default. To disable it (and always use the relay)
+pass `webrtc: false`, and pass `rtcConfiguration` to customise the ICE servers:
+
+```JavaScript
+var test = new uhst.UHST({
+    webrtc: true,
+    rtcConfiguration: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }
+});
+```
+
+### Discovering relays through the hosted UHST API (optional)
+
+By default the library finds public relays from the static relays directory.
+Alternatively, if you have an API key (`uhst_dev_...`) from the
+[UHST dashboard](https://dashboard.uhst.io), the library can discover signaling
+servers through the hosted [UHST API](https://github.com/uhst/api). This is
+entirely optional — you can also point the library at any relay directly with
+`relayUrl`, with or without the API:
+
+```JavaScript
+var test = new uhst.UHST({ apiKey: "uhst_dev_xxxxxxxx" });
+// optional: apiUrl to override the default https://api.uhst.io
+```
+
 ## Contributing
 
 This project is maintained by a community of developers. Contributions are welcome and appreciated.
